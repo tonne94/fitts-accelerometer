@@ -151,6 +151,7 @@ end
 function scene:show(event)
     -- Handle stepper events
     if event.phase == "will" then
+    	composer.removeScene("adv_settings_2")
     	composer.removeScene("test_screen")
     	composer.removeScene("endgame")
 
