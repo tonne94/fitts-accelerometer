@@ -27,12 +27,12 @@ function scene:create(event)
 
     sceneGroup = self.view
 
-    circle1 = display.newCircle( halfW, halfH, 200)    
-    circle1:setFillColor(1,1,1,0)
-    circle1.strokeWidth = 2
-    circle1:setStrokeColor( 1, 1, 1 )
+    circleDistance = display.newCircle( halfW, halfH, 200)    
+    circleDistance:setFillColor(1,1,1,0)
+    circleDistance.strokeWidth = 2
+    circleDistance:setStrokeColor( 1, 1, 1 )
 
-    drawCircles()
+    drawCirclesFirstTime()
 
     --labels for info and counters
     labelInfoCircleNumbers = display.newText("Circle number:", halfW-3*halfW/4, halfH/10, deafult, 25)
@@ -58,7 +58,7 @@ function scene:create(event)
 	--rectangle for start button
     startButton = display.newRect( halfW, screenH-100, 150, 150 )
 
-    sceneGroup:insert(circle1)
+    sceneGroup:insert(circleDistance)
     sceneGroup:insert(circlePlayer)
     sceneGroup:insert(startButton)
 
@@ -75,6 +75,24 @@ function scene:create(event)
     sceneGroup:insert(labelGravityInput)
     sceneGroup:insert(labelAccelerometerInput)
 
+end
+
+--preview circles around the radius called in stepper events
+function drawCirclesFirstTime( event )
+
+    for i=0,currentNumCircles,1 do
+        x[i]=(-math.cos(math.pi/2+2*math.pi/currentNumCircles*i)*currentRadius)+halfW
+        y[i]=(-math.sin(math.pi/2+2*math.pi/currentNumCircles*i)*currentRadius)+halfH
+    end
+
+    for i=0,currentNumCircles,1 do
+        circles[i]=display.newCircle( x[i], y[i], currentCircleSize )
+        circles[i]:setFillColor(1,1,1,0)
+        circles[i].strokeWidth = 2
+        circles[i]:setStrokeColor( 1, 1, 1 )
+        circles[i]:toBack()
+        sceneGroup:insert(circles[i])
+    end
 end
 
 --preview circles around the radius called in stepper events
@@ -158,7 +176,17 @@ function scene:show(event)
         startButton:addEventListener("touch", onStartButtonTouch) 
         labelRawInput:addEventListener("touch", onRawInputTouch)
         labelGravityInput:addEventListener("touch", onGravityInputTouch)
-        
+ 
+        -- Image sheet options and declaration
+        local options = {
+            width = screenW/5,
+            height = screenW/10,
+            numFrames = 5,
+            sheetContentWidth = screenW,
+            sheetContentHeight = screenW/10
+        }
+        local stepperSheet = graphics.newImageSheet( "widget-stepper.png", options )
+                 
         local function onNumCirclesStepperPress( event )
          
             prevNumCircles=currentNumCircles
@@ -173,67 +201,6 @@ function scene:show(event)
 
         end
 
-        local function onRadiusStepperPress( event )
-         
-            if ( "increment" == event.phase ) then
-                currentRadius = currentRadius + 1
-            elseif ( "decrement" == event.phase ) then
-                currentRadius = currentRadius - 1
-            end
-            radiusLabel.text=currentRadius
-            circle1.path.radius = currentRadius
-            drawCircles()
-        end
-
-        local function onCircleSizeStepperPress( event )
-         
-            if ( "increment" == event.phase ) then
-                currentCircleSize = currentCircleSize + 1
-            elseif ( "decrement" == event.phase ) then
-                currentCircleSize = currentCircleSize - 1
-            end
-            circleSizeLabel.text=currentCircleSize
-
-            prevNumCircles=currentNumCircles
-            drawCircles()
-            if currentCircleSize < currentPlayerRadius then
-				circleSizeLabel:setFillColor(1,0,0)
-				playerSizeLabel:setFillColor(1,0,0)
-            else
-				circleSizeLabel:setFillColor(1,1,1)
-				playerSizeLabel:setFillColor(1,1,1)
-            end
-        end
-           
-        local function onPlayerRadiusStepperPress( event )
-     
-	        if ( "increment" == event.phase ) then
-	            currentPlayerRadius = currentPlayerRadius + 1
-	        elseif ( "decrement" == event.phase ) then
-	            currentPlayerRadius = currentPlayerRadius - 1
-	        end
-	        playerSizeLabel.text=currentPlayerRadius
-	        drawPlayerCircle()
-
-	        if currentCircleSize < currentPlayerRadius then
-				circleSizeLabel:setFillColor(1,0,0)
-				playerSizeLabel:setFillColor(1,0,0)
-            else
-				circleSizeLabel:setFillColor(1,1,1)
-				playerSizeLabel:setFillColor(1,1,1)
-            end
-        end      
-
-        -- Image sheet options and declaration
-        local options = {
-            width = screenW/5,
-            height = screenW/10,
-            numFrames = 5,
-            sheetContentWidth = screenW,
-            sheetContentHeight = screenW/10
-        }
-        local stepperSheet = graphics.newImageSheet( "widget-stepper.png", options )
-         
         -- widget stepper for number of circles
         local numCirclesStepper = widget.newStepper(
             {
@@ -251,6 +218,18 @@ function scene:show(event)
                 onPress = onNumCirclesStepperPress
             }
         ) 
+
+        local function onRadiusStepperPress( event )
+         
+            if ( "increment" == event.phase ) then
+                currentRadius = currentRadius + 1
+            elseif ( "decrement" == event.phase ) then
+                currentRadius = currentRadius - 1
+            end
+            radiusLabel.text=currentRadius
+            circleDistance.path.radius = currentRadius
+            drawCircles()
+        end
 
         -- widget stepper for radius in which are the circles drawn
         local radiusStepper = widget.newStepper(
@@ -271,6 +250,26 @@ function scene:show(event)
             }
         )
 
+        local function onCircleSizeStepperPress( event )
+         
+            if ( "increment" == event.phase ) then
+                currentCircleSize = currentCircleSize + 1
+            elseif ( "decrement" == event.phase ) then
+                currentCircleSize = currentCircleSize - 1
+            end
+            circleSizeLabel.text=currentCircleSize
+
+            prevNumCircles=currentNumCircles
+            drawCircles()
+            if currentCircleSize < currentPlayerRadius then
+				circleSizeLabel:setFillColor(1,0,0)
+				playerSizeLabel:setFillColor(1,0,0)
+            else
+				circleSizeLabel:setFillColor(1,1,1)
+				playerSizeLabel:setFillColor(1,1,1)
+            end
+        end
+
         -- widget stepper for radius of circles drawn (targets)
         local circleSizeStepper = widget.newStepper(
             {
@@ -289,6 +288,25 @@ function scene:show(event)
                 onPress = onCircleSizeStepperPress
             }
         )
+
+        local function onPlayerRadiusStepperPress( event )
+     
+	        if ( "increment" == event.phase ) then
+	            currentPlayerRadius = currentPlayerRadius + 1
+	        elseif ( "decrement" == event.phase ) then
+	            currentPlayerRadius = currentPlayerRadius - 1
+	        end
+	        playerSizeLabel.text=currentPlayerRadius
+	        drawPlayerCircle()
+
+	        if currentCircleSize < currentPlayerRadius then
+				circleSizeLabel:setFillColor(1,0,0)
+				playerSizeLabel:setFillColor(1,0,0)
+            else
+				circleSizeLabel:setFillColor(1,1,1)
+				playerSizeLabel:setFillColor(1,1,1)
+            end
+        end     
 
         -- widget stepper for radius of player circle drawn
         local playerRadius = widget.newStepper(
