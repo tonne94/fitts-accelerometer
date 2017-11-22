@@ -46,4 +46,26 @@ scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
 scene:addEventListener("destroy", scene)
 
+local function onKeyEvent( event )
+ 
+    -- Print which key was pressed down/up
+    local message = "Key '" .. event.keyName .. "' was pressed " .. event.phase
+    print( message )
+ 
+    -- If the "back" key was pressed on Android, prevent it from backing out of the app
+    if ( event.keyName == "back" ) then
+        if ( system.getInfo("platform") == "android" ) then
+			composer.gotoScene( "main_menu", "crossFade", 300 )
+            return true
+        end
+    end
+ 
+    -- IMPORTANT! Return false to indicate that this app is NOT overriding the received key
+    -- This lets the operating system execute its default handling of the key
+    return false
+end
+ 
+-- Add the key event listener
+Runtime:addEventListener( "key", onKeyEvent )
+
 return scene

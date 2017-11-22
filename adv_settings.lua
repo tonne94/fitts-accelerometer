@@ -13,113 +13,65 @@ local screenH = display.contentHeight
 local halfW = screenW/2
 local halfH = screenH/2
 
-local numDistances = 3
-local numTargetSizes = 3
+local numAmplitudes = {}
+local numTargetSizes = {}
+local numPlayerSizes = {}
+local numTargets = {}
 
 function scene:create(event)
 	sceneGroup = self.view	
 
 	sceneName = display.newText("Settings", halfW, halfH/10, deafult, 50)
 
-	distancesInfo = display.newText("Number of different distances:", halfW, halfH/4, deafult, 30)
-	distances = display.newText("3", halfW, halfH/4+halfH/9, deafult, 50)
-	
-	targetSizesInfo = display.newText("Number of different target sizes:", halfW, 2*halfH/3, deafult, 30)
-	targetSizes = display.newText("3", halfW, 2*halfH/3+halfH/9, deafult, 50)
+	amplitudesInfo = display.newText("Number of different amplitudes:", halfW, halfH/4, deafult, 30)
+	amplitudesTextArea = native.newTextBox(halfW, halfH/4+halfH/9, screenW-halfW/4, 60)
+    amplitudesTextArea.font = native.newFont( native.systemFont, 40 )
+    amplitudesTextArea.isEditable = true
+    amplitudesTextArea.text = "150;200;250;"
+
+	targetSizesInfo = display.newText("Number of different target sizes:", halfW, halfH/2, deafult, 30)
+    targetSizesTextArea = native.newTextBox(halfW, halfH/2+halfH/9, screenW-halfW/4, 60)
+    targetSizesTextArea.font = native.newFont( native.systemFont, 40 )
+    targetSizesTextArea.isEditable = true
+    targetSizesTextArea.text = "50;80;110;"
+
+    playerSizesInfo = display.newText("Number of different player sizes:", halfW, 3*halfH/4, deafult, 30)
+    playerSizesTextArea = native.newTextBox(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
+    playerSizesTextArea.font = native.newFont( native.systemFont, 40 )
+    playerSizesTextArea.isEditable = true
+    playerSizesTextArea.text = "50;"
+
+    targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, 30)
+    targetNumberTextArea = native.newTextBox(halfW, halfH+halfH/9, screenW-halfW/4, 60)
+    targetNumberTextArea.font = native.newFont( native.systemFont, 40 )
+    targetNumberTextArea.isEditable = true
+    targetNumberTextArea.text = "11;"
 
 	testNumberInfo = display.newText("Number of tests:", halfW, halfH+halfH/4, deafult, 30)
-	testNumber = display.newText("3 x 3 = 9", halfW, halfH+halfH/4+halfH/9, deafult, 50)
+	testNumber = display.newText("3 x 3 x 1 x 1= 9", halfW, halfH+halfH/4+halfH/9, deafult, 50)
 	
-	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+    nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+    checkButton = display.newText("CHECK", halfW, screenH-halfH/3, deafult, 100)
 
 	sceneGroup:insert(sceneName)
-	sceneGroup:insert(distancesInfo)
-	sceneGroup:insert(distances)
-	sceneGroup:insert(targetSizesInfo)
-	sceneGroup:insert(targetSizes)
+    sceneGroup:insert(amplitudesInfo)
+    sceneGroup:insert(amplitudesTextArea)
+    sceneGroup:insert(targetSizesInfo)
+    sceneGroup:insert(targetSizesTextArea)
+    sceneGroup:insert(playerSizesInfo)
+    sceneGroup:insert(playerSizesTextArea)
+    sceneGroup:insert(targetNumberInfo)
+    sceneGroup:insert(targetNumberTextArea)
 	sceneGroup:insert(testNumberInfo)
 	sceneGroup:insert(testNumber)
-	sceneGroup:insert(nextButton)
+    sceneGroup:insert(checkButton)
+    sceneGroup:insert(nextButton)
 end
 
 function scene:show(event)
 	if event.phase == "will" then
-		nextButton:addEventListener("touch", onNextButtonTouch)
-
-		local function onNumDistancesStepperPress( event )
-
-            if ( "increment" == event.phase ) then
-                numDistances = numDistances + 1
-            elseif ( "decrement" == event.phase ) then
-                numDistances = numDistances - 1
-            end
-            distances.text=numDistances
-
-            --update text number of tests
-            testNumber.text = numDistances.." x "..numTargetSizes.." = "..numDistances*numTargetSizes
-        end
-
-		local function onNumTargetSizesStepperPress( event )
-
-            if ( "increment" == event.phase ) then
-                numTargetSizes = numTargetSizes + 1
-            elseif ( "decrement" == event.phase ) then
-                numTargetSizes = numTargetSizes - 1
-            end
-            targetSizes.text=numTargetSizes
-
-            --update text number of tests
-            testNumber.text = numDistances.." x "..numTargetSizes.." = "..numDistances*numTargetSizes
-
-        end
-
-		-- Image sheet options and declaration
-        local options = {
-            width = screenW/5,
-            height = screenW/10,
-            numFrames = 5,
-            sheetContentWidth = screenW,
-            sheetContentHeight = screenW/10
-        }
-        local stepperSheet = graphics.newImageSheet( "widget-stepper.png", options )
-         
-        -- widget stepper for number of circles
-        local numDistancesStepper = widget.newStepper(
-            {
-                x=halfW,
-                y=halfH/4+halfH/4,
-                sheet = stepperSheet,
-                minimumValue = 1,
-                maximumValue = 5,
-                initialValue = 3,
-                defaultFrame = 1,
-                noMinusFrame = 2,
-                noPlusFrame = 3,
-                minusActiveFrame = 4,
-                plusActiveFrame = 5,
-                onPress = onNumDistancesStepperPress
-            }
-        )
-
-        local numTargetSizesStepper = widget.newStepper(
-            {
-                x=halfW,
-                y=2*halfH/3+halfH/4,
-                sheet = stepperSheet,
-                minimumValue = 1,
-                maximumValue = 5,
-                initialValue = 3,
-                defaultFrame = 1,
-                noMinusFrame = 2,
-                noPlusFrame = 3,
-                minusActiveFrame = 4,
-                plusActiveFrame = 5,
-                onPress = onNumTargetSizesStepperPress
-            }
-        )
-
-        sceneGroup:insert(numDistancesStepper)
-        sceneGroup:insert(numTargetSizesStepper)
+        nextButton:addEventListener("touch", onNextButtonTouch)
+        checkButton:addEventListener("touch", onCheckButtonTouch)
 	end
 end
 
@@ -131,18 +83,66 @@ end
 
 function onNextButtonTouch( event )
 	if event.phase == "ended" then
-
+        checkTests()
 		local options = 
 		    { 
 		        effect = "crossFade", time = 300, 
 		        params = 
 		        { 
-		            distances = distances.text, 
-		            targetSizes = targetSizes.text
+		            numAmplitudes = numAmplitudes, 
+                    numTargetSizes = numTargetSizes,
+                    numPlayerSizes = numPlayerSizes,
+                    numTargets = numTargets
 		        } 
 		    }
 	    composer.gotoScene("adv_settings_2", options)
 	end
+end
+
+function onCheckButtonTouch( event )
+    if event.phase == "ended" then
+        checkTests()
+    end
+end
+
+function checkTests()
+
+        numAmplitudes = {}
+        numTargetSizes = {}
+        numPlayerSizes = {}
+        numTargets = {}
+
+        str = amplitudesTextArea.text
+        i=1
+        for w in str:gmatch("(.-);") do 
+            numAmplitudes[i] = tonumber(w)
+            i=i+1
+        end
+
+        str = targetSizesTextArea.text
+        i=1
+        for w in str:gmatch("(.-);") do 
+            numTargetSizes[i] = tonumber(w)
+            i=i+1
+        end
+
+        str = playerSizesTextArea.text
+        i=1
+        for w in str:gmatch("(.-);") do 
+            numPlayerSizes[i] = tonumber(w)
+            i=i+1
+        end
+
+        str = targetNumberTextArea.text
+        i=1
+        for w in str:gmatch("(.-);") do 
+            numTargets[i] = tonumber(w)
+            i=i+1
+        end
+
+        testNumber.text = table.getn(numAmplitudes) .. "*" .. table.getn(numTargetSizes) .. "*" 
+                            .. table.getn(numPlayerSizes) .. "*" .. table.getn(numTargets) .. "=" .. 
+                            table.getn(numAmplitudes)*table.getn(numTargetSizes)*table.getn(numPlayerSizes)*table.getn(numTargets)
 end
 
 scene:addEventListener("create", scene)

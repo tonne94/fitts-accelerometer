@@ -19,7 +19,6 @@ local currentCircleSize = 100
 local currentRadius = 200
 local currentPlayerRadius = 50
 
-local switch = true
 local switchRaw = true
 local switchGravity = false
 
@@ -47,11 +46,6 @@ function scene:create(event)
     labelInfoPlayerSize = display.newText("Player size:", halfW+3*halfW/4, halfH/10, deafult, 25)
     playerSizeLabel = display.newText("50", halfW+3*halfW/4, halfH/5, deafult, 50)  
 
-    labelRawInput = display.newText("Raw input", halfW-halfW/3, screenH-2*halfH/5, deafult, 35)
-    labelRawInput:setFillColor( 0, 1, 0 )
-    labelGravityInput = display.newText("Gravity input", halfW+halfW/3, screenH-2*halfH/5, deafult, 35)
-    labelAccelerometerInput = display.newText("Accelerometer input:", halfW, screenH-2*halfH/4, deafult, 35)
-
 	circlePlayer = display.newCircle( halfW, halfH, currentPlayerRadius )
 	circlePlayer:setFillColor( 0, 0, 1 )
 
@@ -71,9 +65,6 @@ function scene:create(event)
     sceneGroup:insert(labelInfoRadius)
     sceneGroup:insert(labelInfoCircleSize)
     sceneGroup:insert(labelInfoPlayerSize)
-    sceneGroup:insert(labelRawInput)
-    sceneGroup:insert(labelGravityInput)
-    sceneGroup:insert(labelAccelerometerInput)
 
 end
 
@@ -148,34 +139,14 @@ function onStartButtonTouch( event )
     end
 end
 
---called when raw input text pressed
-function onRawInputTouch( event )
-    if event.phase == "ended" then
-        switch = true
-        labelRawInput:setFillColor( 0, 1, 0 )
-        labelGravityInput:setFillColor( 1, 1, 1 )
-    end
-end
-
---called when raw input text pressed
-function onGravityInputTouch( event )
-    if event.phase == "ended" then
-        switch = false
-        labelRawInput:setFillColor( 1, 1, 1 )
-        labelGravityInput:setFillColor( 0, 1, 0 )
-    end
-end
-
 function scene:show(event)
     -- Handle stepper events
     if event.phase == "will" then
-    	composer.removeScene("adv_settings_2")
+    	composer.removeScene("adv_settings")
     	composer.removeScene("test_screen")
     	composer.removeScene("endgame")
 
         startButton:addEventListener("touch", onStartButtonTouch) 
-        labelRawInput:addEventListener("touch", onRawInputTouch)
-        labelGravityInput:addEventListener("touch", onGravityInputTouch)
  
         -- Image sheet options and declaration
         local options = {
