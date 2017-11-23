@@ -21,12 +21,26 @@ local gainValue = 10
 function scene:create(event)
 	sceneGroup = self.view
 
+	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
+	sceneNameBg:setFillColor(1,0,0, 0.5)
+	sceneName = display.newText("Settings", halfW, halfH/15, deafult, 70)
+
   	numAmplitudes = event.params.numAmplitudes
     numTargetSizes = event.params.numTargetSizes
     numPlayerSizes = event.params.numPlayerSizes
     numTargets = event.params.numTargets
+ 
+	local options = {
+	   text = "",
+	   x = halfW,
+	   y = halfH/6,
+	   fontSize = 30,
+	   align = "center"
+	}
 
-	amplitudesInfo = display.newText("Amplitudes (".. table.getn(numAmplitudes)..")", halfW, halfH/5, deafult, 40)
+	amplitudesInfo = display.newText(options)
+	amplitudesInfo.text = "Amplitudes (".. table.getn(numAmplitudes)..")"
+	amplitudesInfo.y=halfH/6+halfH/20
 	amplitudesInfo.text=amplitudesInfo.text.."\n"
 
 	for i=1,table.getn(numAmplitudes),1 do
@@ -37,7 +51,9 @@ function scene:create(event)
 		end
 	end
 
-	targetSizesInfo = display.newText("Target sizes (".. table.getn(numTargetSizes)..")", halfW, 2*halfH/5, deafult, 40)
+	targetSizesInfo = display.newText(options)
+	targetSizesInfo.text = "Target sizes (".. table.getn(numTargetSizes)..")"
+	targetSizesInfo.y=2*halfH/6+halfH/20
 	targetSizesInfo.text=targetSizesInfo.text.."\n"
 
 	for i=1,table.getn(numTargetSizes),1 do
@@ -48,7 +64,9 @@ function scene:create(event)
 		end
 	end
 
-	playerSizesInfo = display.newText("Player sizes (".. table.getn(numPlayerSizes)..")", halfW, 3*halfH/5, deafult, 40)
+	playerSizesInfo = display.newText(options)
+	playerSizesInfo.text = "Player sizes (".. table.getn(numPlayerSizes)..")"
+	playerSizesInfo.y=3*halfH/6+halfH/20
 	playerSizesInfo.text=playerSizesInfo.text.."\n"
 
 	for i=1,table.getn(numPlayerSizes),1 do
@@ -59,7 +77,9 @@ function scene:create(event)
 		end
 	end
 
-	targetsNumInfo = display.newText("Number of targets (".. table.getn(numTargets)..")", halfW, 4*halfH/5, deafult, 40)
+	targetsNumInfo = display.newText(options)
+	targetsNumInfo.text = "Number of targets (".. table.getn(numTargets)..")"
+	targetsNumInfo.y=4*halfH/6+halfH/20
 	targetsNumInfo.text=targetsNumInfo.text.."\n"
 
 	for i=1,table.getn(numTargets),1 do
@@ -70,11 +90,11 @@ function scene:create(event)
 		end
 	end
 
-	labelThresholdInfo = display.newText("Threshold (%):", halfW/2, halfH, deafult, 35)
-	labelThreshold = display.newText("10%", halfW/2, halfH+halfH/10, deafult, 40)
+	labelThresholdInfo = display.newText("Threshold (%):", halfW/2, 5*halfH/6, deafult, 40)
+	labelThreshold = display.newText("10%", halfW/2, 5*halfH/6+halfH/10, deafult, 50)
 
-	labelGainInfo = display.newText("Gain:", 3*halfW/2, halfH, deafult, 35)
-	labelGain = display.newText("x1.0", 3*halfW/2, halfH+halfH/10, deafult, 40)
+	labelGainInfo = display.newText("Gain:", 3*halfW/2, 5*halfH/6, deafult, 40)
+	labelGain = display.newText("x1.0", 3*halfW/2, 5*halfH/6+halfH/10, deafult, 50)
 
     labelAccelerometerInput = display.newText("Accelerometer input:", halfW, screenH-halfH/2, deafult, 35)
     labelRawInput = display.newText("Raw input", halfW-halfW/3, screenH-2*halfH/5, deafult, 35)
@@ -82,6 +102,9 @@ function scene:create(event)
     labelGravityInput = display.newText("Gravity input", halfW+halfW/3, screenH-2*halfH/5, deafult, 35)
 
 	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+
+    sceneGroup:insert(sceneNameBg)
+    sceneGroup:insert(sceneName)
 
     sceneGroup:insert(labelRawInput)
     sceneGroup:insert(labelGravityInput)
@@ -131,7 +154,7 @@ function scene:show(event)
         local tresholdStepper = widget.newStepper(
             {
                 x=halfW/2,
-                y=halfH+halfH/4,
+                y=5*halfH/6+halfH/4,
                 sheet = stepperSheet,
                 minimumValue = 10,
                 maximumValue = 50,
@@ -160,7 +183,7 @@ function scene:show(event)
         local gainStepper = widget.newStepper(
             {
                 x=3*halfW/2,
-                y=halfH+halfH/4,
+                y=5*halfH/6+halfH/4,
                 sheet = stepperSheet,
                 minimumValue = 5,
                 maximumValue = 50,
@@ -206,7 +229,21 @@ end
 
 function onNextButtonTouch( event )
 	if event.phase == "ended" then
-		composer.gotoScene( "graphical_settings", "crossFade", 300 )
+		local options = 
+		    { 
+		        effect = "crossFade", time = 300, 
+		        params = 
+		        { 
+		            numAmplitudes = numAmplitudes, 
+                    numTargetSizes = numTargetSizes,
+                    numPlayerSizes = numPlayerSizes,
+                    numTargets = numTargets,
+                    thresholdValue = thresholdValue,
+                    gainValue = gainValue,
+                    switchAccelerometer = switchAccelerometer
+		        } 
+		    }
+	    composer.gotoScene("test_settings", options)
 	end
 end
 

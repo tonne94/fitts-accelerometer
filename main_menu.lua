@@ -25,6 +25,8 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
+    	composer.removeScene("adv_settings")
+    	composer.removeScene("adv_settings_2")
 		newTestButton:addEventListener("touch", onNewTestButtonTouch)
 	end
 end

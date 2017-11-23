@@ -21,31 +21,37 @@ local numTargets = {}
 function scene:create(event)
 	sceneGroup = self.view	
 
-	sceneName = display.newText("Settings", halfW, halfH/10, deafult, 50)
+    sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
+    sceneNameBg:setFillColor(1,0,0, 0.5)
+	sceneName = display.newText("Settings", halfW, halfH/15, deafult, 70)
 
 	amplitudesInfo = display.newText("Number of different amplitudes:", halfW, halfH/4, deafult, 30)
-	amplitudesTextArea = native.newTextBox(halfW, halfH/4+halfH/9, screenW-halfW/4, 60)
-    amplitudesTextArea.font = native.newFont( native.systemFont, 40 )
-    amplitudesTextArea.isEditable = true
-    amplitudesTextArea.text = "150;200;250;"
+	amplitudesTextField = native.newTextField(halfW, halfH/4+halfH/9, screenW-halfW/4, 60)
+    amplitudesTextField.font = native.newFont( native.systemFont, 40 )
+    amplitudesTextField.isEditable = true
+    amplitudesTextField.text = "150;200;250;"
+    amplitudesTextField.align = "center"
 
 	targetSizesInfo = display.newText("Number of different target sizes:", halfW, halfH/2, deafult, 30)
-    targetSizesTextArea = native.newTextBox(halfW, halfH/2+halfH/9, screenW-halfW/4, 60)
-    targetSizesTextArea.font = native.newFont( native.systemFont, 40 )
-    targetSizesTextArea.isEditable = true
-    targetSizesTextArea.text = "50;80;110;"
+    targetSizesTextField = native.newTextField(halfW, halfH/2+halfH/9, screenW-halfW/4, 60)
+    targetSizesTextField.font = native.newFont( native.systemFont, 40 )
+    targetSizesTextField.isEditable = true
+    targetSizesTextField.text = "50;80;110;"
+    targetSizesTextField.align = "center"
 
     playerSizesInfo = display.newText("Number of different player sizes:", halfW, 3*halfH/4, deafult, 30)
-    playerSizesTextArea = native.newTextBox(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
-    playerSizesTextArea.font = native.newFont( native.systemFont, 40 )
-    playerSizesTextArea.isEditable = true
-    playerSizesTextArea.text = "50;"
+    playerSizesTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
+    playerSizesTextField.font = native.newFont( native.systemFont, 40 )
+    playerSizesTextField.isEditable = true
+    playerSizesTextField.text = "50;"
+    playerSizesTextField.align = "center"
 
     targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, 30)
-    targetNumberTextArea = native.newTextBox(halfW, halfH+halfH/9, screenW-halfW/4, 60)
-    targetNumberTextArea.font = native.newFont( native.systemFont, 40 )
-    targetNumberTextArea.isEditable = true
-    targetNumberTextArea.text = "11;"
+    targetNumberTextField = native.newTextField(halfW, halfH+halfH/9, screenW-halfW/4, 60)
+    targetNumberTextField.font = native.newFont( native.systemFont, 40 )
+    targetNumberTextField.isEditable = true
+    targetNumberTextField.text = "11;"
+    targetNumberTextField.align = "center"
 
 	testNumberInfo = display.newText("Number of tests:", halfW, halfH+halfH/4, deafult, 30)
 	testNumber = display.newText("3 x 3 x 1 x 1= 9", halfW, halfH+halfH/4+halfH/9, deafult, 50)
@@ -53,15 +59,16 @@ function scene:create(event)
     nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
     checkButton = display.newText("CHECK", halfW, screenH-halfH/3, deafult, 100)
 
-	sceneGroup:insert(sceneName)
+    sceneGroup:insert(sceneNameBg)
+    sceneGroup:insert(sceneName)
     sceneGroup:insert(amplitudesInfo)
-    sceneGroup:insert(amplitudesTextArea)
+    sceneGroup:insert(amplitudesTextField)
     sceneGroup:insert(targetSizesInfo)
-    sceneGroup:insert(targetSizesTextArea)
+    sceneGroup:insert(targetSizesTextField)
     sceneGroup:insert(playerSizesInfo)
-    sceneGroup:insert(playerSizesTextArea)
+    sceneGroup:insert(playerSizesTextField)
     sceneGroup:insert(targetNumberInfo)
-    sceneGroup:insert(targetNumberTextArea)
+    sceneGroup:insert(targetNumberTextField)
 	sceneGroup:insert(testNumberInfo)
 	sceneGroup:insert(testNumber)
     sceneGroup:insert(checkButton)
@@ -70,6 +77,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
+        composer.removeScene("main_menu")
         nextButton:addEventListener("touch", onNextButtonTouch)
         checkButton:addEventListener("touch", onCheckButtonTouch)
 	end
@@ -112,28 +120,28 @@ function checkTests()
         numPlayerSizes = {}
         numTargets = {}
 
-        str = amplitudesTextArea.text
+        str = amplitudesTextField.text
         i=1
         for w in str:gmatch("(.-);") do 
             numAmplitudes[i] = tonumber(w)
             i=i+1
         end
 
-        str = targetSizesTextArea.text
+        str = targetSizesTextField.text
         i=1
         for w in str:gmatch("(.-);") do 
             numTargetSizes[i] = tonumber(w)
             i=i+1
         end
 
-        str = playerSizesTextArea.text
+        str = playerSizesTextField.text
         i=1
         for w in str:gmatch("(.-);") do 
             numPlayerSizes[i] = tonumber(w)
             i=i+1
         end
 
-        str = targetNumberTextArea.text
+        str = targetNumberTextField.text
         i=1
         for w in str:gmatch("(.-);") do 
             numTargets[i] = tonumber(w)
