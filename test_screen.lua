@@ -13,35 +13,44 @@ local screenH = display.contentHeight
 local halfW = screenW/2
 local halfH = screenH/2
 
-local activeIndex = 0
-
-local xPos = 0
-local yPos = 0
-local zPos = 0
-local count = 0
-
 local x = {}
 local y = {}
-local numCircles=0
 
 --variables to store x and y coordinates and time when submit pressed
 local x_submitted  = {}
 local y_submitted  = {}
 local time_submitted = {}
 
-local circleCounter = 0 
-local endgame = 0
 
 function scene:create(event)
 	sceneGroup = self.view
 
-  	numCircles = event.params.numCircles
+	activeIndex = 0
+	xPos = 0
+	yPos = 0
+	zPos = 0
+	count = 0
+	circleCounter = 0 
+	endgame = 0
+
+	numCircles = event.params.numCircles
   	radius = event.params.radius
   	circleSize = event.params.circleSize
   	playerSize = event.params.playerSize
-  	switch = event.params.switch
 
-	if switch == true then
+	testNumber = event.params.testNumber
+	testsArray = event.params.testsArray
+	switchAccelerometer = event.params.switchAccelerometer
+	numOfTests = event.params.numOfTests
+	thresholdValue = event.params.thresholdValue
+	gainValue = event.params.gainValue
+
+	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
+	sceneNameBg:setFillColor(1,0,0, 0.5)
+	sceneName = display.newText("Test["..testNumber.."]: "..testsArray[testNumber][1]..", "..testsArray[testNumber][2]
+						..", "..testsArray[testNumber][3]..", "..testsArray[testNumber][4], halfW, halfH/15, deafult, 60)
+
+	if switchAccelerometer == true then
 		Runtime:addEventListener( "accelerometer", onAccelerateRaw )
 		infoSwitchLabel = display.newText("onAccelerateRaw",halfW, screenH-halfH/2, deafult, 20)
 	else
@@ -57,7 +66,6 @@ function scene:create(event)
 	circle1:setStrokeColor( 1, 1, 1 )
 
 	submitButton = display.newRect( halfW+200, halfH+500, 150, 150 )
-	backButton = display.newRect( 50, 50, 80, 80 )
 
 	for i=0,numCircles,1 do
 		x[i]=(-math.cos(math.pi/2+2*math.pi/numCircles*i)*radius)+halfW
@@ -75,6 +83,10 @@ function scene:create(event)
 	targetCircle = display.newCircle( -200, -200, circleSize )
 	changeTarget(activeIndex)
 
+	testNumber=testNumber+1
+
+	sceneGroup:insert(sceneNameBg)
+	sceneGroup:insert(sceneName)
 	sceneGroup:insert(textX)
 	sceneGroup:insert(textY)
 	sceneGroup:insert(textZ)
@@ -85,17 +97,15 @@ function scene:create(event)
 	sceneGroup:insert(targetCircle)
 	sceneGroup:insert(circlePlayer)
 	sceneGroup:insert(submitButton)
-	sceneGroup:insert(backButton)
 	sceneGroup:insert(infoSwitchLabel)
 end
 
 function scene:show(event)
 	if event.phase == "will" then
-		composer.removeScene("graphical_settings")
+		composer.removeScene("test_counter")
 	end
 	if event.phase == "did" then
 		submitButton:addEventListener("touch", onSubmitTouch)
-		backButton:addEventListener("touch", onBackButtonTouch)
 	end
 
 end
@@ -163,20 +173,20 @@ function onSubmitTouch( event )
 	                y_real = y,
 	                numCircles = numCircles,
 	                time_submitted = time_submitted,
-	                switch = switch
+
+					testNumber = testNumber,
+					thresholdValue = thresholdValue,
+					gainValue = gainValue,
+		            switchAccelerometer = switchAccelerometer,
+		            numOfTests = numOfTests,
+					testsArray = testsArray
 	            } 
 	        }
-			composer.gotoScene( "endgame", options )
+			composer.gotoScene( "test_counter", options )
 			endgame = 1
 		end
 		circleCounter = circleCounter + 1
 		changeTarget(activeIndex)
-	end
-end
-
-function onBackButtonTouch( event )
-	if event.phase == "ended" then
-		composer.gotoScene( "graphical_settings", "crossFade", 300 )
 	end
 end
 
