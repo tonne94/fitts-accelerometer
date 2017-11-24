@@ -19,6 +19,7 @@ local y = {}
 --variables to store x and y coordinates and time when submit pressed
 local x_submitted  = {}
 local y_submitted  = {}
+local hit = {}
 local time_submitted = {}
 
 
@@ -132,7 +133,6 @@ end
 
 function changeTarget(index)
 	if endgame == 0 then
-		time_submitted[circleCounter]=system.getTimer()
 		targetCircle:removeSelf()
 		targetCircle = display.newCircle( x[index], y[index], circleSize )
 		targetCircle:setFillColor( 1,0,0,1)
@@ -156,10 +156,16 @@ end
 
 function onSubmitTouch( event )
 	if event.phase == "ended" then
+		time_submitted[circleCounter]=system.getTimer()
 		x_submitted[activeIndex] = circlePlayer.x
 		y_submitted[activeIndex] = circlePlayer.y
 		local x_diff = math.abs(circlePlayer.x-x[activeIndex])
 		local y_diff = math.abs(circlePlayer.y-y[activeIndex])
+		if (x_diff <= circleSize-playerSize) and (y_diff <= circleSize-playerSize) then
+			hit[activeIndex]=true
+		else
+			hit[activeIndex]=false
+		end
 		updateIndex()	
 		if circleCounter == numCircles then
 			local options = 
@@ -173,6 +179,7 @@ function onSubmitTouch( event )
 	                y_real = y,
 	                numCircles = numCircles,
 	                time_submitted = time_submitted,
+	                hit = hit,
 
 					testNumber = testNumber,
 					thresholdValue = thresholdValue,

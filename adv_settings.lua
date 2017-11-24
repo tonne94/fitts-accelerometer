@@ -25,36 +25,32 @@ function scene:create(event)
     sceneNameBg:setFillColor(1,0,0, 0.5)
 	sceneName = display.newText("Settings", halfW, halfH/15, deafult, 70)
 
-	amplitudesInfo = display.newText("Number of different amplitudes:", halfW, halfH/4, deafult, 30)
+	amplitudesInfo = display.newText("Amplitudes:", halfW, halfH/4, deafult, 50)
 	amplitudesTextField = native.newTextField(halfW, halfH/4+halfH/9, screenW-halfW/4, 60)
     amplitudesTextField.font = native.newFont( native.systemFont, 40 )
     amplitudesTextField.isEditable = true
     amplitudesTextField.text = "150;200;250;"
-    amplitudesTextField.align = "center"
-
-	targetSizesInfo = display.newText("Number of different target sizes:", halfW, halfH/2, deafult, 30)
+    
+	targetSizesInfo = display.newText("Target sizes:", halfW, halfH/2, deafult, 50)
     targetSizesTextField = native.newTextField(halfW, halfH/2+halfH/9, screenW-halfW/4, 60)
     targetSizesTextField.font = native.newFont( native.systemFont, 40 )
     targetSizesTextField.isEditable = true
     targetSizesTextField.text = "50;80;110;"
-    targetSizesTextField.align = "center"
 
-    playerSizesInfo = display.newText("Number of different player sizes:", halfW, 3*halfH/4, deafult, 30)
+    playerSizesInfo = display.newText("Player sizes:", halfW, 3*halfH/4, deafult, 50)
     playerSizesTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
     playerSizesTextField.font = native.newFont( native.systemFont, 40 )
     playerSizesTextField.isEditable = true
     playerSizesTextField.text = "50;"
-    playerSizesTextField.align = "center"
 
-    targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, 30)
+    targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, 50)
     targetNumberTextField = native.newTextField(halfW, halfH+halfH/9, screenW-halfW/4, 60)
     targetNumberTextField.font = native.newFont( native.systemFont, 40 )
     targetNumberTextField.isEditable = true
     targetNumberTextField.text = "11;"
-    targetNumberTextField.align = "center"
 
-	testNumberInfo = display.newText("Number of tests:", halfW, halfH+halfH/4, deafult, 30)
-	testNumber = display.newText("3 x 3 x 1 x 1= 9", halfW, halfH+halfH/4+halfH/9, deafult, 50)
+	testNumberInfo = display.newText("Number of tests:", halfW, halfH+halfH/4, deafult, 50)
+	testNumber = display.newText("3*3*1*1=9", halfW, halfH+halfH/4+halfH/9, deafult, 50)
 	
     nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
     checkButton = display.newText("CHECK", halfW, screenH-halfH/3, deafult, 100)
