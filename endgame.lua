@@ -17,55 +17,48 @@ local halfH = screenH/2
 function scene:create(event)
 	sceneGroup = self.view
 
-	--x_submitted = event.params.x_submitted
-	--y_submitted = event.params.y_submitted
-	--x_real = event.params.x_real
-	--y_real = event.params.y_real
-	--numCircles = event.params.numCircles
-	--time_submitted = event.params.time_submitted
-	--switch = event.params.switch
+	numOfTests = event.params.numOfTests
+	username = event.params.username
 
+	results = display.newText("", halfW, halfH/2, deafult, 20)
 
-	results = display.newText("", halfW, halfH, deafult, 20)
+	testsText=""
 
-	--for i=0,numCircles,1 do
-		--results.text=results.text.."\n".."["..i.."]".."Time: "..time_submitted[i]-time_submitted[0].."\nx_submitted: "..x_submitted[i].." y_submitted: "..y_submitted[i].."\nx_real: "..x_real[i].." y_real: "..y_real[i]
-	--end
+	for i=1, numOfTests,1 do
+		local path = system.pathForFile( "test"..i.."-"..username..".json", system.TemporaryDirectory)
+		local file, errorString = io.open( path, "r" )
+		if not file then
+	    -- Error occurred; output the cause
+	    print( "File error: " .. errorString )
+		else
+		    -- Read data from file
+		    local contents = file:read( "*a" )
+		    -- Output the file contents
+		    testsText=testsText..contents
+		end
 
-	local jsonOut = 
-		{
-			timestamp = os.date("%c"),
-			user = "username_add_later",
-			tests = 
-			{
-				["test[1]"] =
-				{
-					amplitude=70,
-			        target_size=70,
-			        player_size=50,
-			        num_targets=11,
-			        accelometer="gravity",
-			        threshold=10,
-			        gain=1.0,
-			        total_time=126,
-			        avg_time=10.2
-				},
-				["test[2]"] =
-				{
-					amplitude=70,
-			        target_size=70,
-			        player_size=50,
-			        num_targets=11,
-			        accelometer="gravity",
-			        threshold=10,
-			        gain=1.0,
-			        total_time=126,
-			        avg_time=10.2
-				}
-			}
-		}
+		local result, reason = os.remove( system.pathForFile( "test"..i.."-"..username..".json", system.TemporaryDirectory ) )
+		  
+		if result then
+		   results.text = "File removed" 
+		else
+		  results.text = "File does not exist".. reason   --> File does not exist    apple.txt: No such file or directory
+		end
+	end
 
-	results.text=json.encode(jsonOut, { indent=true })
+	testsText="{\n".."\t\"timestamp\":\""..os.date("%c").."\",\n\t\"username\":\""..username.."\",\n\t\"tests\":\n\t{"..testsText.."\n\t}\n}"
+
+	local path = system.pathForFile(username..".json", system.DocumentsDirectory)
+	local file, errorString = io.open( path, "w" )
+	if not file then
+	-- Error occurred; output the cause
+	    print("File error: " .. errorString)
+	else
+	    -- Write data to file
+	    file:write( testsText )
+	    -- Close the file handle
+	    io.close( file )
+	end
 
 	saveButton = display.newText("Save details as JSON", halfW, screenH-50, deafult, 50)
 	backButton = display.newRect( 50, 50, 80, 80 )
@@ -101,45 +94,12 @@ end
 
 function onSaveButtonTouch( event )
 	if event.phase == "ended" then
-
-		local t = os.date( '*t' )  -- get table of current date and time
-		print( t.hour..t.min..t.sec..t.day..t.month..t.year)  
-
-		local path = system.pathForFile( t.hour..t.min..t.sec..t.day..t.month..t.year.."-user.json", system.DocumentsDirectory)
-		local file, errorString = io.open( path, "w" )
-
-		local saveData = results.text
-
-		if not file then
-    	-- Error occurred; output the cause
-		    directory.text =  "File error: " .. errorString 
-		else
-		    -- Write data to file
-		    file:write( saveData )
-		    -- Close the file handle
-		    io.close( file )
-		end
-		local file, errorString = io.open( path, "r" )
-		if not file then	    -- Error occurred; output the cause
-		    print( "File error: " .. errorString )
-		else
-		    -- Read data from file
-		    local contents = file:read( "*a" )
-		    -- Output the file contents
-		    directory.text = path
-		    -- Close the file handle
-		    io.close( file )
-		end
-		 
-		file = nil
-
-		directory.text="ideees"
 		local options =
 		{
 		   to = "antonio.bradicic@hotmail.com",
 		   subject = "Results",
 		   body = "",
-		   attachment = { baseDir=system.DocumentsDirectory, filename=t.hour..t.min..t.sec..t.day..t.month..t.year.."-user.json", type="application/json" }
+		   attachment = { baseDir=system.DocumentsDirectory, filename=username..".json", type="application/json" }
 		}
 		native.showPopup( "mail", options )
 	end

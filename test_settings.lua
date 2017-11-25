@@ -96,7 +96,7 @@ function onNextButtonTouch( event )
                     testNumber = testNumber
 		        } 
 		    }
-	    composer.gotoScene("test_counter", options)
+	    composer.gotoScene("username", options)
 	end
 end
 

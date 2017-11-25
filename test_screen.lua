@@ -180,6 +180,7 @@ function onSubmitTouch( event )
 	                numCircles = numCircles,
 	                time_submitted = time_submitted,
 	                hit = hit,
+	                username=username,
 
 					testNumber = testNumber,
 					thresholdValue = thresholdValue,
