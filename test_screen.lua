@@ -205,9 +205,21 @@ function onAccelerateRaw( event )
 	    textX.text = "X:"..event.xRaw
 	    textY.text = "Y:"..event.yRaw
 	    textZ.text = "Z:"..event.zRaw
+	    x_move=event.xRaw
+	    y_move=event.yRaw
+	    if (thresholdValue/100)>math.abs(x_move) then
+			x_move = 0
+		end
 
-	    circlePlayer.x = circlePlayer.x + event.xRaw*20
-	    circlePlayer.y = circlePlayer.y - event.yRaw*20
+	    if (thresholdValue/100)>math.abs(y_move) then
+			y_move = 0
+		end
+	    circlePlayer.x = circlePlayer.x + x_move*20*(gainValue/10)
+	    circlePlayer.y = circlePlayer.y - y_move*20*(gainValue/10)
+	    if circlePlayer.x < 0 then circlePlayer.x = 0 end
+	    if circlePlayer.y < 0 then circlePlayer.y = 0 end
+	    if circlePlayer.x > screenW then circlePlayer.x = screenW end
+	    if circlePlayer.y > screenH then circlePlayer.y = screenH end
 	    coordinates.text= "X:"..circlePlayer.x.."\n Y:"..circlePlayer.y
 	end
 end
@@ -219,9 +231,21 @@ function onAccelerateGravity( event )
 	    textX.text = "X:"..event.xGravity
 	    textY.text = "Y:"..event.yGravity
 	    textZ.text = "Z:"..event.zGravity
+		x_move=event.xGravity
+	    y_move=event.yGravity
+	    if (thresholdValue/100)>math.abs(x_move) then
+			x_move = 0
+		end
 
-	    circlePlayer.x = circlePlayer.x + event.xGravity*20
-	    circlePlayer.y = circlePlayer.y - event.yGravity*20
+	    if (thresholdValue/100)>math.abs(y_move) then
+			y_move = 0
+		end
+	    circlePlayer.x = circlePlayer.x + x_move*20*(gainValue/10)
+	    circlePlayer.y = circlePlayer.y - y_move*20*(gainValue/10)
+	    if circlePlayer.x < 0 then circlePlayer.x = 0 end
+	    if circlePlayer.y < 0 then circlePlayer.y = 0 end
+	    if circlePlayer.x > screenW then circlePlayer.x = screenW end
+	    if circlePlayer.y > screenH then circlePlayer.y = screenH end
 	    coordinates.text= "X:"..circlePlayer.x.."\n Y:"..circlePlayer.y
 	end
 end

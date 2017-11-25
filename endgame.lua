@@ -46,8 +46,9 @@ function scene:create(event)
 		end
 	end
 
-	testsText="{\n".."\t\"timestamp\":\""..os.date("%c").."\",\n\t\"username\":\""..username.."\",\n\t\"tests\":\n\t{"..testsText.."\n\t}\n}"
-
+	local t = os.date( '*t' )
+	testsText="{\n".."\t\"timestamp\":\""..os.date( "%X").." "..t.day.."."..t.month.."."..t.year.."\",\n\t\"username\":\""..username.."\",\n\t\"tests\":\n\t{"..testsText.."\n\t}\n}"
+	
 	local path = system.pathForFile(username..".json", system.DocumentsDirectory)
 	local file, errorString = io.open( path, "w" )
 	if not file then
