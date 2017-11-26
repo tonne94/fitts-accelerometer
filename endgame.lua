@@ -85,7 +85,7 @@ end
 
 function onBackButtonTouch( event )
 	if event.phase == "ended" then
-		composer.gotoScene( "graphical_settings", "crossFade", 300 )
+		composer.gotoScene( "main_menu", "crossFade", 300 )
 	end
 end
 

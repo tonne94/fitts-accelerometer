@@ -35,13 +35,13 @@ function scene:create(event)
     targetSizesTextField = native.newTextField(halfW, halfH/2+halfH/9, screenW-halfW/4, 60)
     targetSizesTextField.font = native.newFont( native.systemFont, 40 )
     targetSizesTextField.isEditable = true
-    targetSizesTextField.text = "50;80;110;"
+    targetSizesTextField.text = "60;90;120;"
 
     playerSizesInfo = display.newText("Player sizes:", halfW, 3*halfH/4, deafult, 50)
     playerSizesTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
     playerSizesTextField.font = native.newFont( native.systemFont, 40 )
     playerSizesTextField.isEditable = true
-    playerSizesTextField.text = "50;"
+    playerSizesTextField.text = "30;"
 
     targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, 50)
     targetNumberTextField = native.newTextField(halfW, halfH+halfH/9, screenW-halfW/4, 60)

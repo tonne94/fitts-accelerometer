@@ -240,7 +240,8 @@ function onNextButtonTouch( event )
                     numTargets = numTargets,
                     thresholdValue = thresholdValue,
                     gainValue = gainValue,
-                    switchAccelerometer = switchAccelerometer
+                    switchAccelerometer = switchAccelerometer,
+                    prevScene = "adv_settings_2"
 		        } 
 		    }
 	    composer.gotoScene("test_settings", options)
