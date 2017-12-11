@@ -36,54 +36,55 @@ function scene:show(event)
 		if not file then
 		-- Error occurred; output the cause
 		    print("File error: " .. errorString)
+		    displayVAriables.text="NO LOADED TEST"
+			nextButton.text="BACK"
 		else
 			-- Read data from file
 		    contents = file:read( "*a" )
 		    -- Close the file handle
 		    io.close( file )
-		end
-		displayVAriables.text=contents
-		i=1
-        for w in contents:gmatch("([^:]*);") do 
-        	line[i]=w
-        	i=i+1
-        end
 
-        testNumber = tonumber(line[1]) 
-        numOfTests = tonumber(line[2]) 
-        if tonumber(line[3])==1 then
-			switchAccelerometer = true
-		else
-			switchAccelerometer = false
-		end
-		gainValue = tonumber(line[4]) 
-		thresholdValue = tonumber(line[5]) 
+			displayVAriables.text=contents
+			i=1
+	        for w in contents:gmatch("([^:]*);") do 
+	        	line[i]=w
+	        	i=i+1
+	        end
 
- 		if tonumber(line[6])==1 then
-			switchSubmitStyle = true
-		else
-			switchSubmitStyle = false
-		end
+	        testNumber = tonumber(line[1]) 
+	        numOfTests = tonumber(line[2]) 
+	        if tonumber(line[3])==1 then
+				switchAccelerometer = true
+			else
+				switchAccelerometer = false
+			end
+			gainValue = tonumber(line[4]) 
+			thresholdValue = tonumber(line[5]) 
 
-	    dwellTimeValue = tonumber(line[7])
-	    
-	    for i=1, numOfTests, 1 do
-	    	k=1
-	    	testsArray[i] = {}
-			for word in line[i+7]:gmatch("(.-),") do 
-	        	testsArray[i][k]=tonumber(word)
-	        	k=k+1
-        	end
-	    end
+	 		if tonumber(line[6])==1 then
+				switchSubmitStyle = true
+			else
+				switchSubmitStyle = false
+			end
+
+		    dwellTimeValue = tonumber(line[7])
+		    
+		    for i=1, numOfTests, 1 do
+		    	k=1
+		    	testsArray[i] = {}
+				for word in line[i+7]:gmatch("(.-),") do 
+		        	testsArray[i][k]=tonumber(word)
+		        	k=k+1
+	        	end
+		    end  
+		end
 	end
 end
 
 function onNextButtonTouch( event )
 	if event.phase == "ended" then
-		if isRed then
-			toast.show("ERROR: Size of player is bigger than the size of target in one of the tests")
-        else
-        	--go to test_settings screen
+	   	--go to test_settings screen
+	   	if nextButton.text=="NEXT" then
 			local options = 
 			    { 
 			        effect = "crossFade", time = 300, 
@@ -93,15 +94,19 @@ function onNextButtonTouch( event )
 	                    thresholdValue = thresholdValue,
 	                    gainValue = gainValue,
 	                    switchAccelerometer = switchAccelerometer,
-                    	switchSubmitStyle = switchSubmitStyle,
-                    	dwellTimeValue = dwellTimeValue,
+	                	switchSubmitStyle = switchSubmitStyle,
+	                	dwellTimeValue = dwellTimeValue,
 	                    numOfTests = numOfTests,
 	                    testNumber = testNumber,
-                    	prevScene = "loaded"
+	                	prevScene = "loaded"
 			        } 
 			    }
 		    composer.gotoScene("test_settings", options)
+
+		elseif nextButton.text=="BACK" then
+			composer.gotoScene("main_menu", options)
 		end
+
 	end
 end
 
