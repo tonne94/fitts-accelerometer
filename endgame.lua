@@ -7,7 +7,7 @@
 -- Your code here
 local composer = require( "composer" )
 local scene = composer.newScene()
-local json = require( "json" )
+local widget = require( "widget" )
 
 local screenW = display.contentWidth
 local screenH = display.contentHeight
@@ -20,8 +20,9 @@ function scene:create(event)
 	numOfTests = event.params.numOfTests
 	username = event.params.username
 
-	results = display.newText("", halfW, halfH/2, deafult, 20)
-
+	results = display.newText("Name of file:\n"..username..".json", halfW, halfH/2, deafult, 20)
+	error_text = display.newText("", halfW, halfH/2+50, deafult, 20)
+	error_text:setFillColor(1,0,0)
 	testsText=""
 
 	for i=1, numOfTests,1 do
@@ -40,9 +41,9 @@ function scene:create(event)
 		local result, reason = os.remove( system.pathForFile( "test"..i.."-"..username..".json", system.TemporaryDirectory ) )
 		  
 		if result then
-		   results.text = "File removed" 
+		   error_text.text = "File removed" 
 		else
-		  results.text = "File does not exist".. reason   --> File does not exist    apple.txt: No such file or directory
+		  error_text.text = "File does not exist".. reason   --> File does not exist    apple.txt: No such file or directory
 		end
 	end
 
@@ -61,7 +62,7 @@ function scene:create(event)
 	    io.close( file )
 	end
 
-	saveButton = display.newText("Save details as JSON", halfW, screenH-50, deafult, 50)
+	saveButton = display.newText("Save details as JSON", halfW, screenH-halfH/2, deafult, 100)
 	backButton = display.newRect( 50, 50, 80, 80 )
 	
 	sceneGroup:insert(results)
@@ -74,6 +75,37 @@ function scene:show(event)
 		composer.removeScene("test_counter")
 		backButton:addEventListener("touch", onBackButtonTouch)
 		saveButton:addEventListener("touch", onSaveButtonTouch)
+
+		-- Handle press events for the checkbox
+		local function onSwitchPress( event )
+		    local switch = event.target
+		    print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
+		    if switch.isOn then
+		    	local t = os.date( '*t' )
+				timestamp=t.day..t.month..t.year
+		    else
+		    	timestamp=""
+		    end
+				results.text="Name of file:\n"..username..timestamp..".json"
+		end
+		 
+		-- Create the widget
+		local addTimestampCheckbox = widget.newSwitch(
+		    {
+		        x=halfW/2, 
+                y=halfH,        
+                width = screenW/12,
+        		height = screenW/12,
+		        style = "checkbox",
+		        id = "Checkbox",
+		        onPress = onSwitchPress
+		    }
+		)
+		addTimestampText=display.newText("Add timestamp", halfW/2+screenW/12, halfH, deafult, screenW/12)
+		addTimestampText.anchorX=0
+		sceneGroup:insert(addTimestampCheckbox)
+		sceneGroup:insert(addTimestampText)
+
 	end
 end
 
@@ -89,10 +121,6 @@ function onBackButtonTouch( event )
 	end
 end
 
-function avamane(avama)
-
-end
-
 function onSaveButtonTouch( event )
 	if event.phase == "ended" then
 		local options =
@@ -100,7 +128,7 @@ function onSaveButtonTouch( event )
 		   to = "antonio.bradicic@hotmail.com",
 		   subject = "Results",
 		   body = "",
-		   attachment = { baseDir=system.DocumentsDirectory, filename=username..".json", type="application/json" }
+		   attachment = { baseDir=system.DocumentsDirectory, filename=username..timestamp..".json", type="application/json" }
 		}
 		native.showPopup( "mail", options )
 	end

@@ -17,10 +17,11 @@ function scene:create(event)
 
 	newTestButton = display.newText("NEW TEST", halfW, halfH-halfH/4, deafult, 100)
 	loadTestButton = display.newText("LOAD TEST", halfW, halfH, deafult, 100)
-	loadTestButton:setFillColor(1,0,0)
+	displaySavedTestsButton = display.newText("SHOW SAVED TESTS", halfW, halfH+halfH/4, deafult, 60)
 
 	sceneGroup:insert(newTestButton)
 	sceneGroup:insert(loadTestButton)
+	sceneGroup:insert(displaySavedTestsButton)
 end
 
 function scene:show(event)
@@ -34,6 +35,9 @@ function scene:show(event)
     	composer.removeScene("graphical_settings")
     	composer.removeScene("endgame")
 		newTestButton:addEventListener("touch", onNewTestButtonTouch)
+		loadTestButton:addEventListener("touch", onLoadTestButtonTouch)
+		displaySavedTestsButton:addEventListener("touch", onSavedTestsButtonTouch)
+
 	end
 end
 
@@ -46,6 +50,18 @@ end
 function onNewTestButtonTouch( event )
 	if event.phase == "ended" then
 		composer.gotoScene( "adv_settings", "crossFade", 300 )
+	end
+end
+
+function onLoadTestButtonTouch( event )
+	if event.phase == "ended" then
+		composer.gotoScene( "loaded", "crossFade", 300 )
+	end
+end
+
+function onSavedTestsButtonTouch( event )
+	if event.phase == "ended" then
+		composer.gotoScene( "saved_tests", "crossFade", 300 )
 	end
 end
 

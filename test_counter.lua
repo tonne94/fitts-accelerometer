@@ -18,7 +18,9 @@ function scene:create(event)
 
 	testNumber = event.params.testNumber
 	testsArray = event.params.testsArray
-	switchAccelerometer = event.params.switchAccelerometer
+	switchAccelerometer = event.params.switchAccelerometer	
+	switchSubmitStyle = event.params.switchSubmitStyle
+    dwellTimeValue = event.params.dwellTimeValue
 	numOfTests = event.params.numOfTests
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
@@ -71,18 +73,23 @@ function scene:create(event)
         subtask="\n\t\t\t\"subtasks\":\n\t\t\t{\n"..subtask.."\t\t\t}\n"
 
         total_time=time_submitted[numCircles]-time_submitted[1]
-        avg_time=(time_submitted[numCircles]-time_submitted[1])/(numCircles-1)
-		
-		local testJson = ""
-		testJson=testJson.."\n\t\t\t\"amplitude\":"..testsArray[testNumber-1][1]..",\n\t\t\t\"target_size\":"..testsArray[testNumber-1][2]..",\n\t\t\t\"player_size\":"..testsArray[testNumber-1][3]
-				..",\n\t\t\t\"num_targets\":"..testsArray[testNumber-1][4]..",\n\t\t\t\"accelerometer\":\""..switchAccelerometerInfo.."\",\n\t\t\t\"hits\":\""..isHit.."/"..(numCircles+1).."\",\n\t\t\t\"threshold\":"..thresholdValue..
-				",\n\t\t\t\"gain\":"..(gainValue/10)..",\n\t\t\t\"total_time\":"..total_time..",\n\t\t\t\"avg_time\":"..avg_time..","..subtask
+        avg_time=(time_submitted[numCircles]-time_submitted[1])/numCircles
+		local task = ""
+		if switchSubmitStyle == true then
+			task=task.."\n\t\t\t\"amplitude\":"..testsArray[testNumber-1][1]..",\n\t\t\t\"target_size\":"..testsArray[testNumber-1][2]..",\n\t\t\t\"player_size\":"..testsArray[testNumber-1][3]
+					..",\n\t\t\t\"num_targets\":"..testsArray[testNumber-1][4]..",\n\t\t\t\"accelerometer\":\""..switchAccelerometerInfo.."\",\n\t\t\t\"hits\":\""..isHit.."/"..(numCircles+1).."\",\n\t\t\t\"threshold\":"..thresholdValue..
+					",\n\t\t\t\"gain\":"..(gainValue/10)..",\n\t\t\t\"submit_style\":\"touch\""..",\n\t\t\t\"total_time\":"..total_time..",\n\t\t\t\"avg_time\":"..avg_time..","..subtask
+		else
+			task=task.."\n\t\t\t\"amplitude\":"..testsArray[testNumber-1][1]..",\n\t\t\t\"target_size\":"..testsArray[testNumber-1][2]..",\n\t\t\t\"player_size\":"..testsArray[testNumber-1][3]
+					..",\n\t\t\t\"num_targets\":"..testsArray[testNumber-1][4]..",\n\t\t\t\"accelerometer\":\""..switchAccelerometerInfo.."\",\n\t\t\t\"hits\":\""..isHit.."/"..(numCircles+1).."\",\n\t\t\t\"threshold\":"..thresholdValue..
+					",\n\t\t\t\"gain\":"..(gainValue/10)..",\n\t\t\t\"submit_style\":\"dwell\""..",\n\t\t\t\"dwell_time\":"..(dwellTimeValue/10)..",\n\t\t\t\"total_time\":"..total_time..",\n\t\t\t\"avg_time\":"..avg_time..","..subtask
+		end
 
 
 		if (testNumber-1)==numOfTests then
-			testJson = "\n\t\t\"test["..(testNumber-1).."]\":\n\t\t{"..testJson.."\t\t}"
+			task = "\n\t\t\"test["..(testNumber-1).."]\":\n\t\t{"..task.."\t\t}"
 		else
-			testJson = "\n\t\t\"test["..(testNumber-1).."]\":\n\t\t{"..testJson.."\t\t},"
+			task = "\n\t\t\"test["..(testNumber-1).."]\":\n\t\t{"..task.."\t\t},"
 		end
 
 		local path = system.pathForFile( "test"..(testNumber-1).."-"..username..".json", system.TemporaryDirectory)
@@ -92,7 +99,7 @@ function scene:create(event)
 		    print("File error: " .. errorString)
 		else
 		    -- Write data to file
-		    file:write( testJson )
+		    file:write( task )
 		    -- Close the file handle
 		    io.close( file )
 		end
@@ -161,6 +168,8 @@ function onNextButtonTouch( event )
 						thresholdValue = thresholdValue,
 						gainValue = gainValue,
 			            switchAccelerometer = switchAccelerometer,
+			            switchSubmitStyle = switchSubmitStyle,
+                    	dwellTimeValue = dwellTimeValue,
 			            numOfTests = numOfTests,
 						testsArray = testsArray
 			        } 

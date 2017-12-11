@@ -14,9 +14,10 @@ local halfW = screenW/2
 local halfH = screenH/2
 
 local switchAccelerometer = true
-
+local switchSubmitStyle = true
 local thresholdValue = 10
 local gainValue = 10
+local dwellTimeValue = 10
 
 function scene:create(event)
 	sceneGroup = self.view
@@ -40,7 +41,7 @@ function scene:create(event)
 
 	amplitudesInfo = display.newText(options)
 	amplitudesInfo.text = "Amplitudes (".. table.getn(numAmplitudes)..")"
-	amplitudesInfo.y=halfH/6+halfH/20
+	amplitudesInfo.y=halfH/8+halfH/10
 	amplitudesInfo.text=amplitudesInfo.text.."\n"
 
 	for i=1,table.getn(numAmplitudes),1 do
@@ -53,7 +54,7 @@ function scene:create(event)
 
 	targetSizesInfo = display.newText(options)
 	targetSizesInfo.text = "Target sizes (".. table.getn(numTargetSizes)..")"
-	targetSizesInfo.y=2*halfH/6+halfH/20
+	targetSizesInfo.y=2*halfH/8+halfH/10
 	targetSizesInfo.text=targetSizesInfo.text.."\n"
 
 	for i=1,table.getn(numTargetSizes),1 do
@@ -66,7 +67,7 @@ function scene:create(event)
 
 	playerSizesInfo = display.newText(options)
 	playerSizesInfo.text = "Player sizes (".. table.getn(numPlayerSizes)..")"
-	playerSizesInfo.y=3*halfH/6+halfH/20
+	playerSizesInfo.y=3*halfH/8+halfH/10
 	playerSizesInfo.text=playerSizesInfo.text.."\n"
 
 	for i=1,table.getn(numPlayerSizes),1 do
@@ -79,7 +80,7 @@ function scene:create(event)
 
 	targetsNumInfo = display.newText(options)
 	targetsNumInfo.text = "Number of targets (".. table.getn(numTargets)..")"
-	targetsNumInfo.y=4*halfH/6+halfH/20
+	targetsNumInfo.y=4*halfH/8+halfH/10
 	targetsNumInfo.text=targetsNumInfo.text.."\n"
 
 	for i=1,table.getn(numTargets),1 do
@@ -90,16 +91,26 @@ function scene:create(event)
 		end
 	end
 
-	labelThresholdInfo = display.newText("Threshold (%):", halfW/2, 5*halfH/6, deafult, 40)
-	labelThreshold = display.newText("10%", halfW/2, 5*halfH/6+halfH/10, deafult, 50)
+	labelThresholdInfo = display.newText("Threshold (%):", halfW/2, 6*halfH/8, deafult, 40)
+	labelThreshold = display.newText("10%", halfW/2, 6*halfH/8+halfH/10, deafult, 50)
 
-	labelGainInfo = display.newText("Gain:", 3*halfW/2, 5*halfH/6, deafult, 40)
-	labelGain = display.newText("x1.0", 3*halfW/2, 5*halfH/6+halfH/10, deafult, 50)
+	labelGainInfo = display.newText("Gain:", 3*halfW/2, 6*halfH/8, deafult, 40)
+	labelGain = display.newText("x1", 3*halfW/2, 6*halfH/8+halfH/10, deafult, 50)
 
-    labelAccelerometerInput = display.newText("Accelerometer input:", halfW, screenH-halfH/2, deafult, 35)
-    labelRawInput = display.newText("Raw input", halfW-halfW/3, screenH-2*halfH/5, deafult, 35)
+    labelAccelerometerInput = display.newText("Accelerometer input:", halfW, 9*halfH/8, deafult, 35)
+    labelRawInput = display.newText("Raw input", halfW-halfW/3, 9*halfH/8+halfH/10, deafult, 40)
     labelRawInput:setFillColor( 0, 1, 0 )
-    labelGravityInput = display.newText("Gravity input", halfW+halfW/3, screenH-2*halfH/5, deafult, 35)
+    labelGravityInput = display.newText("Gravity input", halfW+halfW/3, 9*halfH/8+halfH/10, deafult, 40)
+
+    labelSubmitStyleInput = display.newText("Submit style:", halfW-halfW/3, 11*halfH/8, deafult, 35)
+    labelButtonStyleInput = display.newText("Touch screen", halfW-halfW/3, 11*halfH/8+halfH/10, deafult, 40)
+    labelButtonStyleInput:setFillColor( 0, 1, 0 )
+    labelDwellStyleInput = display.newText("Dwell", halfW-halfW/3, 11*halfH/8+2*halfH/10, deafult, 40)
+
+	labelDwellTimeInfo = display.newText("Dwell time:", halfW+halfW/2, 11*halfH/8, deafult, 40)
+	labelDwellTime = display.newText("1s", halfW+halfW/2, 11*halfH/8+halfH/10, deafult, 50)
+	dwellTimeHideRect = display.newRect(halfW+halfW/2, 12*halfH/8, 200, 300)
+	dwellTimeHideRect:setFillColor( 0, 0, 0 )
 
 	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
 
@@ -110,10 +121,18 @@ function scene:create(event)
     sceneGroup:insert(labelGravityInput)
     sceneGroup:insert(labelAccelerometerInput)
 
+    sceneGroup:insert(labelButtonStyleInput)
+    sceneGroup:insert(labelDwellStyleInput)
+    sceneGroup:insert(labelSubmitStyleInput)
+
     sceneGroup:insert(labelThresholdInfo)
     sceneGroup:insert(labelThreshold)
     sceneGroup:insert(labelGainInfo)
     sceneGroup:insert(labelGain)
+
+    sceneGroup:insert(labelDwellTimeInfo)
+    sceneGroup:insert(labelDwellTime)
+    sceneGroup:insert(dwellTimeHideRect)
 
 	sceneGroup:insert(amplitudesInfo)
 	sceneGroup:insert(targetSizesInfo)
@@ -129,6 +148,8 @@ function scene:show(event)
 		nextButton:addEventListener("touch", onNextButtonTouch)
         labelRawInput:addEventListener("touch", onRawInputTouch)
         labelGravityInput:addEventListener("touch", onGravityInputTouch)
+        labelButtonStyleInput:addEventListener("touch", onButtonStyleTouch)
+        labelDwellStyleInput:addEventListener("touch", onDwellStyleTouch)
 
         -- Image sheet options and declaration
         local options = {
@@ -154,7 +175,7 @@ function scene:show(event)
         local tresholdStepper = widget.newStepper(
             {
                 x=halfW/2,
-                y=5*halfH/6+halfH/4,
+                y=6*halfH/8+halfH/4,
                 sheet = stepperSheet,
                 minimumValue = 1,
                 maximumValue = 50,
@@ -183,7 +204,7 @@ function scene:show(event)
         local gainStepper = widget.newStepper(
             {
                 x=3*halfW/2,
-                y=5*halfH/6+halfH/4,
+                y=6*halfH/8+halfH/4,
                 sheet = stepperSheet,
                 minimumValue = 1,
                 maximumValue = 50,
@@ -198,8 +219,39 @@ function scene:show(event)
             }
         )
 
+        local function onDwellTimeStepperPress( event )
+     
+	        if ( "increment" == event.phase ) then
+	            dwellTimeValue = dwellTimeValue + 1
+	        elseif ( "decrement" == event.phase ) then
+	            dwellTimeValue = dwellTimeValue - 1
+	        end
+	        labelDwellTime.text = (dwellTimeValue/10).."s"
+        end     
+
+        -- widget stepper for radius of player circle drawn
+        local dwellTimeStepper = widget.newStepper(
+            {
+                x=halfW+halfW/2, 
+                y=12*halfH/8+halfH/10,
+                sheet = stepperSheet,
+                minimumValue = 2,
+                maximumValue = 30,
+                initialValue = 10,
+                timerIncrementSpeed  = 300,
+                defaultFrame = 1,
+                noMinusFrame = 2,
+                noPlusFrame = 3,
+                minusActiveFrame = 4,
+                plusActiveFrame = 5,
+                onPress = onDwellTimeStepperPress
+            }
+        )
+
         sceneGroup:insert(tresholdStepper)
         sceneGroup:insert(gainStepper)
+        sceneGroup:insert(dwellTimeStepper)
+        dwellTimeHideRect:toFront()
 	end
 end
 
@@ -207,6 +259,26 @@ function scene:hide(event)
 end
 
 function scene:destroy(event)
+end
+
+--called when button style text pressed
+function onButtonStyleTouch( event )
+    if event.phase == "ended" then
+        switchSubmitStyle = true
+        dwellTimeHideRect.isVisible=true 
+        labelButtonStyleInput:setFillColor( 0, 1, 0 )
+        labelDwellStyleInput:setFillColor( 1, 1, 1 )
+    end
+end
+
+--called when dwell style text pressed
+function onDwellStyleTouch( event )
+    if event.phase == "ended" then
+        switchSubmitStyle = false
+        dwellTimeHideRect.isVisible=false
+        labelButtonStyleInput:setFillColor( 1, 1, 1 )
+        labelDwellStyleInput:setFillColor( 0, 1, 0 )
+    end
 end
 
 --called when raw input text pressed
@@ -241,6 +313,8 @@ function onNextButtonTouch( event )
                     thresholdValue = thresholdValue,
                     gainValue = gainValue,
                     switchAccelerometer = switchAccelerometer,
+                    switchSubmitStyle = switchSubmitStyle,
+                    dwellTimeValue = dwellTimeValue,
                     prevScene = "adv_settings_2"
 		        } 
 		    }

@@ -33,6 +33,8 @@ function scene:create(event)
 	    thresholdValue = event.params.thresholdValue
 		gainValue = event.params.gainValue
 		switchAccelerometer = event.params.switchAccelerometer
+		switchSubmitStyle = event.params.switchSubmitStyle
+        dwellTimeValue = event.params.dwellTimeValue
 
 		numOfTests = table.getn(numAmplitudes)*table.getn(numTargetSizes)*table.getn(numPlayerSizes)*table.getn(numTargets)
 
@@ -58,14 +60,23 @@ function scene:create(event)
 				end
 			end
 		end
-	end
-  	
-	if prevScene == "graphical_settings" then
+	elseif prevScene == "graphical_settings" then
  		thresholdValue = event.params.thresholdValue
 		gainValue = event.params.gainValue
 		switchAccelerometer = event.params.switchAccelerometer
+		switchSubmitStyle = event.params.switchSubmitStyle
 		numOfTests = event.params.numOfTests
 		testsArray = event.params.testsArray
+        dwellTimeValue = event.params.dwellTimeValue
+
+	elseif prevScene == "loaded" then
+ 		thresholdValue = event.params.thresholdValue
+		gainValue = event.params.gainValue
+		switchAccelerometer = event.params.switchAccelerometer
+		switchSubmitStyle = event.params.switchSubmitStyle
+		numOfTests = event.params.numOfTests
+		testsArray = event.params.testsArray
+        dwellTimeValue = event.params.dwellTimeValue
 	end
 
 	isRed=false
@@ -100,9 +111,10 @@ function scene:show(event)
 
     	composer.removeScene("adv_settings_2")
     	composer.removeScene("graphical_settings")
+    	composer.removeScene("loaded")
 
 		nextButton:addEventListener("touch", onNextButtonTouch)
-		for j=1,i-1,1 do 
+		for j=1,numOfTests,1 do 
 			numTestsInfo[j]:addEventListener("touch", onTestPress)
 		end
 	end
@@ -119,6 +131,7 @@ function onNextButtonTouch( event )
 		if isRed then
 			toast.show("ERROR: Size of player is bigger than the size of target in one of the tests")
         else
+        	--go to username screen
 			local options = 
 			    { 
 			        effect = "crossFade", time = 300, 
@@ -128,6 +141,8 @@ function onNextButtonTouch( event )
 	                    thresholdValue = thresholdValue,
 	                    gainValue = gainValue,
 	                    switchAccelerometer = switchAccelerometer,
+                    	switchSubmitStyle = switchSubmitStyle,
+                    	dwellTimeValue = dwellTimeValue,
 	                    numOfTests = numOfTests,
 	                    testNumber = testNumber
 			        } 
@@ -150,6 +165,7 @@ function onTestPress( event )
                     thresholdValue = thresholdValue,
                     gainValue = gainValue,
                     switchAccelerometer = switchAccelerometer,
+                    dwellTimeValue = dwellTimeValue,
                     numOfTests = numOfTests,
 		            index = index
 		        } 

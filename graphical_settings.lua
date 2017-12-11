@@ -27,7 +27,9 @@ function scene:create(event)
     sceneGroup = self.view
 
 	testsArray = event.params.testsArray
-	switchAccelerometer = event.params.switchAccelerometer
+	switchAccelerometer = event.params.switchAccelerometer	
+	switchSubmitStyle = event.params.switchSubmitStyle
+    dwellTimeValue = event.params.dwellTimeValue
 	numOfTests = event.params.numOfTests
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
@@ -162,6 +164,8 @@ function onStartButtonTouch( event )
                     thresholdValue = thresholdValue,
                     gainValue = gainValue,
                     switchAccelerometer = switchAccelerometer,
+					switchSubmitStyle = switchSubmitStyle,
+	                dwellTimeValue = dwellTimeValue,
                     numOfTests = numOfTests,
                     testNumber = testNumber,
                     prevScene = "graphical_settings"

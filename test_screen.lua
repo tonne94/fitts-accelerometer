@@ -22,6 +22,7 @@ local y_submitted  = {}
 local hit = {}
 local time_submitted = {}
 
+local lockSubmitStyle = 0
 
 function scene:create(event)
 	sceneGroup = self.view
@@ -41,7 +42,9 @@ function scene:create(event)
 
 	testNumber = event.params.testNumber
 	testsArray = event.params.testsArray
-	switchAccelerometer = event.params.switchAccelerometer
+	switchAccelerometer = event.params.switchAccelerometer	
+	switchSubmitStyle = event.params.switchSubmitStyle
+    dwellTimeValue = event.params.dwellTimeValue
 	numOfTests = event.params.numOfTests
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
@@ -58,6 +61,13 @@ function scene:create(event)
 		Runtime:addEventListener( "accelerometer", onAccelerateGravity )
 		infoSwitchLabel = display.newText("onAccelerateGravity",halfW, screenH-halfH/2, deafult, 20)
 	end
+
+	if switchSubmitStyle == true then
+		infoSwitchLabel.text = infoSwitchLabel.text.."\nTouch"
+	else
+		infoSwitchLabel.text = infoSwitchLabel.text.."\nDwell".." DwellTime: "..(dwellTimeValue/10)
+	end
+
 	circlePlayer = display.newCircle( halfW, halfH, playerSize )
 	circlePlayer:setFillColor( 0, 0, 1 )
 
@@ -65,8 +75,6 @@ function scene:create(event)
 	circle1:setFillColor(1,1,1,0)
 	circle1.strokeWidth = 2
 	circle1:setStrokeColor( 1, 1, 1 )
-
-	submitButton = display.newRect( halfW+200, halfH+500, 150, 150 )
 
 	for i=0,numCircles,1 do
 		x[i]=(-math.cos(math.pi/2+2*math.pi/numCircles*i)*radius)+halfW
@@ -79,12 +87,18 @@ function scene:create(event)
 	textZ = display.newText("Z:"..zPos, halfW, halfH+550, deafult, 20)
 	countText = display.newText( "0", halfW, halfH-100, deafult, 20)
 	coordinates = display.newText( "KOORDINATE", halfW, halfH-450, deafult, 20)
-	screenSize = display.newText( "SCREEN WIDTH"..display.pixelWidth.."\nSCREEN HEIGHT"..screenH, halfW, halfH-550, deafult, 20)
+	screenSize = display.newText( "SCREEN WIDTH"..display.pixelWidth.."\nSCREEN HEIGHT"..screenH, halfW, halfH-400, deafult, 20)
 
 	targetCircle = display.newCircle( -200, -200, circleSize )
 	changeTarget(activeIndex)
 
 	testNumber=testNumber+1
+
+	submitButton = display.newRect( halfW, halfH, screenW, screenH )
+	submitButton:setFillColor(1,1,1)
+	submitButton.alpha = 0
+	submitButton.isHitTestable = true
+	submitButton:toFront()
 
 	sceneGroup:insert(sceneNameBg)
 	sceneGroup:insert(sceneName)
@@ -106,7 +120,9 @@ function scene:show(event)
 		composer.removeScene("test_counter")
 	end
 	if event.phase == "did" then
-		submitButton:addEventListener("touch", onSubmitTouch)
+		if switchSubmitStyle==true then
+			submitButton:addEventListener("touch", onSubmitTouch)
+		end
 	end
 
 end
@@ -154,6 +170,50 @@ function updateIndex( event )
 	end
 end
 
+function onDwellSubmit ( event ) 
+	time_submitted[circleCounter]=system.getTimer()
+	x_submitted[activeIndex] = circlePlayer.x
+	y_submitted[activeIndex] = circlePlayer.y
+	local x_diff = math.abs(circlePlayer.x-x[activeIndex])
+	local y_diff = math.abs(circlePlayer.y-y[activeIndex])
+	if (x_diff <= circleSize-playerSize) and (y_diff <= circleSize-playerSize) then
+		hit[activeIndex]=true
+	else
+		hit[activeIndex]=false
+	end
+	updateIndex()	
+	if circleCounter == numCircles then
+		local options = 
+        { 
+            effect = "crossFade", time = 300, 
+            params = 
+            { 
+                x_submitted = x_submitted,
+                y_submitted = y_submitted,
+                x_real = x,
+                y_real = y,
+                numCircles = numCircles,
+                time_submitted = time_submitted,
+                hit = hit,
+                username=username,
+
+				testNumber = testNumber,
+				thresholdValue = thresholdValue,
+				gainValue = gainValue,
+	            switchAccelerometer = switchAccelerometer,
+				switchSubmitStyle = switchSubmitStyle,
+                dwellTimeValue = dwellTimeValue,
+	            numOfTests = numOfTests,
+				testsArray = testsArray
+            } 
+        }
+		composer.gotoScene( "test_counter", options )
+		endgame = 1
+	end
+	circleCounter = circleCounter + 1
+	changeTarget(activeIndex)
+end
+
 function onSubmitTouch( event )
 	if event.phase == "ended" then
 		time_submitted[circleCounter]=system.getTimer()
@@ -186,6 +246,8 @@ function onSubmitTouch( event )
 					thresholdValue = thresholdValue,
 					gainValue = gainValue,
 		            switchAccelerometer = switchAccelerometer,
+					switchSubmitStyle = switchSubmitStyle,
+	                dwellTimeValue = dwellTimeValue,
 		            numOfTests = numOfTests,
 					testsArray = testsArray
 	            } 
@@ -207,6 +269,7 @@ function onAccelerateRaw( event )
 	    textZ.text = "Z:"..event.zRaw
 	    x_move=event.xRaw
 	    y_move=event.yRaw
+
 	    if (thresholdValue/100)>math.abs(x_move) then
 			x_move = 0
 		end
@@ -214,6 +277,36 @@ function onAccelerateRaw( event )
 	    if (thresholdValue/100)>math.abs(y_move) then
 			y_move = 0
 		end
+
+		if lockSubmitStyle == 0 then
+			dwellTimeStart=system.getTimer()
+		end
+
+		if switchSubmitStyle == false then
+			if x_move == 0 and y_move == 0 then
+				if lockSubmitStyle == 0 then
+					dwellTimeStart=system.getTimer()
+					lockSubmitStyle = 1
+				end
+			end
+		end
+
+		dwellTimeEnd=system.getTimer()
+
+		if switchSubmitStyle == false then
+			if x_move ~= 0 and y_move ~= 0 then
+				dwellTimeEnd=system.getTimer()
+				lockSubmitStyle = 0
+			end
+		end
+
+		if switchSubmitStyle == false then
+			if dwellTimeEnd-dwellTimeStart>(dwellTimeValue*100) then
+				lockSubmitStyle = 0
+				onDwellSubmit()
+			end
+		end
+
 	    circlePlayer.x = circlePlayer.x + x_move*20*(gainValue/10)
 	    circlePlayer.y = circlePlayer.y - y_move*20*(gainValue/10)
 	    if circlePlayer.x < 0 then circlePlayer.x = 0 end
@@ -240,6 +333,36 @@ function onAccelerateGravity( event )
 	    if (thresholdValue/100)>math.abs(y_move) then
 			y_move = 0
 		end
+
+		if lockSubmitStyle == 0 then
+			dwellTimeStart=system.getTimer()
+		end
+
+		if switchSubmitStyle == false then
+			if x_move == 0 and y_move == 0 then
+				if lockSubmitStyle == 0 then
+					dwellTimeStart=system.getTimer()
+					lockSubmitStyle = 1
+				end
+			end
+		end
+
+		dwellTimeEnd=system.getTimer()
+
+		if switchSubmitStyle == false then
+			if x_move ~= 0 and y_move ~= 0 then
+				dwellTimeEnd=system.getTimer()
+				lockSubmitStyle = 0
+			end
+		end
+
+		if switchSubmitStyle == false then
+			if dwellTimeEnd-dwellTimeStart>(dwellTimeValue*100) then
+				lockSubmitStyle = 0
+				onDwellSubmit()
+			end
+		end
+
 	    circlePlayer.x = circlePlayer.x + x_move*20*(gainValue/10)
 	    circlePlayer.y = circlePlayer.y - y_move*20*(gainValue/10)
 	    if circlePlayer.x < 0 then circlePlayer.x = 0 end
