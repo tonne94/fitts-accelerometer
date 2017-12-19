@@ -13,6 +13,15 @@ local screenH = display.contentHeight
 local halfW = screenW/2
 local halfH = screenH/2
 numTestsInfo={}
+local testNumber
+local testsArray
+local switchAccelerometer
+local switchSubmitStyle
+local dwellTimeValue
+local numOfTests
+local thresholdValue
+local gainValue
+local username
 function scene:create(event)
 	sceneGroup = self.view
 
@@ -119,8 +128,6 @@ function scene:create(event)
 	else
 		infoLabel.text = username.."\nGet ready for:\nTest["..testNumber.."]"
 	end
-
-
 	sceneGroup:insert(infoLabel)
 	sceneGroup:insert(nextButton)
 end
@@ -136,7 +143,7 @@ end
 function scene:hide(event)
 end
 
-function scene:destroy(event)
+function scene:destroy(event)    
 end
 
 function onNextButtonTouch( event )
@@ -153,12 +160,13 @@ function onNextButtonTouch( event )
 			    }
 			    composer.gotoScene("endgame", options)
 		else
+			
 			local options = 
 			    { 
 			        effect = "crossFade", time = 300, 
 			        params = 
-			        { 
-			            radius = testsArray[testNumber][1],
+			        {	
+			        	radius = testsArray[testNumber][1],
 			            circleSize = testsArray[testNumber][2],
 			            playerSize = testsArray[testNumber][3],
 			            numCircles = testsArray[testNumber][4],

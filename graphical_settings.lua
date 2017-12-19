@@ -34,7 +34,7 @@ function scene:create(event)
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
 	index = event.params.index
-
+	
 	currentNumCircles = tonumber(testsArray[index][4])
 	prevNumCircles = tonumber(testsArray[index][4])
 	currentCircleSize = tonumber(testsArray[index][2])
@@ -150,10 +150,10 @@ function onStartButtonTouch( event )
 			toast.show('ERROR: Size of player is bigger than the size of target')
         else
 
-        	testsArray[index][1]=radiusLabel.text
-        	testsArray[index][2]=circleSizeLabel.text
-        	testsArray[index][3]=playerSizeLabel.text
-        	testsArray[index][4]=circleNumbersLabel.text
+        	testsArray[index][1]=tonumber(radiusLabel.text)
+        	testsArray[index][2]=tonumber(circleSizeLabel.text)
+        	testsArray[index][3]=tonumber(playerSizeLabel.text)
+        	testsArray[index][4]=tonumber(circleNumbersLabel.text)
 
         	local options = 
 		    { 

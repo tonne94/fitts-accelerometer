@@ -23,6 +23,15 @@ local hit = {}
 local time_submitted = {}
 
 local lockSubmitStyle = 0
+local testNumber
+local testsArray
+local switchAccelerometer
+local switchSubmitStyle
+local dwellTimeValue
+local numOfTests
+local thresholdValue
+local gainValue
+local username 
 
 function scene:create(event)
 	sceneGroup = self.view
@@ -48,6 +57,7 @@ function scene:create(event)
 	numOfTests = event.params.numOfTests
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
+	username = event.params.username
 
 	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
 	sceneNameBg:setFillColor(1,0,0, 0.5)
@@ -121,6 +131,7 @@ function scene:show(event)
 	end
 	if event.phase == "did" then
 		if switchSubmitStyle==true then
+   
 			submitButton:addEventListener("touch", onSubmitTouch)
 		end
 	end
@@ -134,6 +145,7 @@ function scene:destroy(event)
 	targetCircle:removeSelf()
 	Runtime:removeEventListener( "accelerometer", onAccelerateRaw )
 	Runtime:removeEventListener( "accelerometer", onAccelerateGravity )
+ 
 end
 
 function drawCircles( event )
@@ -160,8 +172,9 @@ function changeTarget(index)
 end
 
 function updateIndex( event )
+	print(activeIndex)
 	numCircles=tonumber(numCircles)
-	local halfNumCircles=math.floor(numCircles/2)
+	halfNumCircles=math.floor(numCircles/2)
 
 	if activeIndex+halfNumCircles > numCircles then
 		activeIndex=activeIndex-(halfNumCircles+1)

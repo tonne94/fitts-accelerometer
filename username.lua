@@ -17,6 +17,8 @@ local isLoaded = false
 function scene:create(event)
 	sceneGroup = self.view
 
+	isLoaded = event.params.isLoaded
+
 	if isLoaded == false then	
 		testNumber = event.params.testNumber
 		testsArray = event.params.testsArray
@@ -26,7 +28,6 @@ function scene:create(event)
 		gainValue = event.params.gainValue
 		switchSubmitStyle = event.params.switchSubmitStyle
 	    dwellTimeValue = event.params.dwellTimeValue
-
     	last_test_file_string = "testNumber:"..testNumber..";"
     	last_test_file_string = last_test_file_string.."\nnumOfTests:"..numOfTests..";"
 
@@ -75,15 +76,45 @@ function scene:create(event)
     usernameTextField.isEditable = true
 	usernameTextField.text="user"
 
-	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+	nextButton = display.newText("START TESTING", halfW, screenH-halfH/10, deafult, 80)
 
+
+    backButton = display.newRect( 50, 50, 80, 80 )
 	sceneGroup:insert(usernameText)
     sceneGroup:insert(usernameTextField)
 	sceneGroup:insert(nextButton)
+    sceneGroup:insert(backButton)
+    print("username_create")
+end
+
+function onBackButtonTouch( event )
+    if event.phase == "ended" then
+        local options = 
+		    { 
+		        effect = "crossFade", time = 300, 
+		        params = 
+		        { 
+		            testsArray = testsArray,
+                    thresholdValue = thresholdValue,
+                    gainValue = gainValue,
+                    switchAccelerometer = switchAccelerometer,
+                	switchSubmitStyle = switchSubmitStyle,
+                	dwellTimeValue = dwellTimeValue,
+                    numOfTests = numOfTests,
+                    testNumber = testNumber,
+                    isLoaded = isLoaded,
+                	prevScene = "username"
+		        } 
+		    }
+	    composer.gotoScene("test_settings", options)
+    end
 end
 
 function scene:show(event)
 	if event.phase == "will" then
+    print("username_show_will")
+    	composer.removeScene("test_settings")
+    	backButton:addEventListener("touch", onBackButtonTouch)
 		nextButton:addEventListener("touch", onNextButtonTouch)
 	end
 end

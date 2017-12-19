@@ -113,6 +113,7 @@ function scene:create(event)
 	dwellTimeHideRect:setFillColor( 0, 0, 0 )
 
 	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+    backButton = display.newRect( 50, 50, 80, 80 )
 
     sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)
@@ -140,12 +141,23 @@ function scene:create(event)
 	sceneGroup:insert(targetsNumInfo)
 
 	sceneGroup:insert(nextButton)
+	sceneGroup:insert(backButton)
+    print("adv_settings_2_create")
+end
+
+function onBackButtonTouch( event )
+    if event.phase == "ended" then
+        composer.gotoScene( "adv_settings", "crossFade", 300 )
+    end
 end
 
 function scene:show(event)
 	if event.phase == "will" then
+    print("adv_settings_2_show_will")
     	composer.removeScene("adv_settings")
+    	composer.removeScene("test_settings")
 		nextButton:addEventListener("touch", onNextButtonTouch)
+        backButton:addEventListener("touch", onBackButtonTouch)
         labelRawInput:addEventListener("touch", onRawInputTouch)
         labelGravityInput:addEventListener("touch", onGravityInputTouch)
         labelButtonStyleInput:addEventListener("touch", onButtonStyleTouch)

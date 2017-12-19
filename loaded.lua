@@ -17,18 +17,32 @@ line = {}
 function scene:create(event)
 	sceneGroup = self.view
 
-	displayVAriables = display.newText("", halfW, halfH, deafult, 20)
+	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
+    sceneNameBg:setFillColor(1,0,0, 0.5)
+	sceneName = display.newText("Last test loaded", halfW, halfH/15, deafult, 70)
+
+	displayVariables = display.newText("", halfW, halfH, deafult, 40)
     nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+    backButton = display.newRect( 50, 50, 80, 80 )
 
+	sceneGroup:insert(sceneNameBg)
+    sceneGroup:insert(sceneName)
     sceneGroup:insert(nextButton)
+	sceneGroup:insert(displayVariables)
+    sceneGroup:insert(backButton)
 
-	sceneGroup:insert(displayVAriables)
+end
+
+function onBackButtonTouch( event )
+    if event.phase == "ended" then
+        composer.gotoScene( "main_menu", "crossFade", 300 )
+    end
 end
 
 function scene:show(event)
 	if event.phase == "will" then
         composer.removeScene("main_menu")
-
+		backButton:addEventListener("touch", onBackButtonTouch)
         nextButton:addEventListener("touch", onNextButtonTouch)
 
 		local path = system.pathForFile( "last_test", system.TemporaryDirectory)
@@ -36,7 +50,7 @@ function scene:show(event)
 		if not file then
 		-- Error occurred; output the cause
 		    print("File error: " .. errorString)
-		    displayVAriables.text="NO LOADED TEST"
+		    displayVariables.text="NO LOADED TEST"
 			nextButton.text="BACK"
 		else
 			-- Read data from file
@@ -44,7 +58,7 @@ function scene:show(event)
 		    -- Close the file handle
 		    io.close( file )
 
-			displayVAriables.text=contents
+			displayVariables.text=contents
 			i=1
 	        for w in contents:gmatch("([^:]*);") do 
 	        	line[i]=w

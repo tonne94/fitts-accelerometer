@@ -15,6 +15,16 @@ local halfH = screenH/2
 
 local numTestsInfo={}
 local testsArray = {}
+local numOfTests
+local numAmplitudes
+local numTargetSizes
+local numPlayerSizes
+local numTargets
+local thresholdValue
+local gainValu
+local switchAccelerometer
+local switchSubmitStyle
+local dwellTimeValue
 
 function scene:create(event)
 	sceneGroup = self.view
@@ -27,7 +37,7 @@ function scene:create(event)
 
 	if prevScene == "adv_settings_2" then
 		numAmplitudes = event.params.numAmplitudes
-	    numTargetSizes = event.params.numTargetSizes
+	   	numTargetSizes = event.params.numTargetSizes
 	    numPlayerSizes = event.params.numPlayerSizes
 	    numTargets = event.params.numTargets
 	    thresholdValue = event.params.thresholdValue
@@ -77,6 +87,17 @@ function scene:create(event)
 		numOfTests = event.params.numOfTests
 		testsArray = event.params.testsArray
         dwellTimeValue = event.params.dwellTimeValue
+        isLoaded = true
+
+    elseif prevScene == "username" then
+ 		thresholdValue = event.params.thresholdValue
+		gainValue = event.params.gainValue
+		switchAccelerometer = event.params.switchAccelerometer
+		switchSubmitStyle = event.params.switchSubmitStyle
+		numOfTests = event.params.numOfTests
+		testsArray = event.params.testsArray
+        dwellTimeValue = event.params.dwellTimeValue
+        isLoaded = event.params.isLoaded
 	end
 
 	isRed=false
@@ -88,8 +109,7 @@ function scene:create(event)
 
 		if testsArray[i][2]==testsArray[i][3] then
 			numTestsInfo[i]:setFillColor(1,1,0)
-		elseif
-			testsArray[i][2]<testsArray[i][3] then
+		elseif testsArray[i][2]<testsArray[i][3] then
 			numTestsInfo[i]:setFillColor(1,0,0)
 			isRed=true
 		end
@@ -101,19 +121,33 @@ function scene:create(event)
 
 	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
 
+    backButton = display.newRect( 50, 50, 80, 80 )
+
+
 	sceneGroup:insert(sceneNameBg)
 	sceneGroup:insert(sceneName)
 	sceneGroup:insert(nextButton)
+    sceneGroup:insert(backButton)
+    --print("test_settings_create")
+end
+
+function onBackButtonTouch( event )
+    if event.phase == "ended" then
+       	
+        composer.gotoScene( "adv_settings_2", "crossFade", 300 )
+    end
 end
 
 function scene:show(event)
 	if event.phase == "will" then
-
-    	composer.removeScene("adv_settings_2")
+		print("test_settings_show_will")
+    	--composer.removeScene("adv_settings_2")
     	composer.removeScene("graphical_settings")
     	composer.removeScene("loaded")
+    	composer.removeScene("username")
 
 		nextButton:addEventListener("touch", onNextButtonTouch)
+        backButton:addEventListener("touch", onBackButtonTouch)
 		for j=1,numOfTests,1 do 
 			numTestsInfo[j]:addEventListener("touch", onTestPress)
 		end
@@ -144,7 +178,8 @@ function onNextButtonTouch( event )
                     	switchSubmitStyle = switchSubmitStyle,
                     	dwellTimeValue = dwellTimeValue,
 	                    numOfTests = numOfTests,
-	                    testNumber = testNumber
+	                    testNumber = testNumber,
+	                    isLoaded = false
 			        } 
 			    }
 		    composer.gotoScene("username", options)

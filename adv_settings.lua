@@ -54,6 +54,7 @@ function scene:create(event)
 	
     nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
     checkButton = display.newText("CHECK", halfW, screenH-halfH/3, deafult, 100)
+    backButton = display.newRect( 50, 50, 80, 80 )
 
     sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)
@@ -69,13 +70,24 @@ function scene:create(event)
 	sceneGroup:insert(testNumber)
     sceneGroup:insert(checkButton)
     sceneGroup:insert(nextButton)
+    sceneGroup:insert(backButton)
+    print("adv_settings_create")
+end
+
+function onBackButtonTouch( event )
+    if event.phase == "ended" then
+        composer.gotoScene( "main_menu", "crossFade", 300 )
+    end
 end
 
 function scene:show(event)
 	if event.phase == "will" then
+        print("adv_settings_show_will")
         composer.removeScene("main_menu")
+        composer.removeScene("adv_settings_2")
         nextButton:addEventListener("touch", onNextButtonTouch)
         checkButton:addEventListener("touch", onCheckButtonTouch)
+        backButton:addEventListener("touch", onBackButtonTouch)
 	end
 end
 

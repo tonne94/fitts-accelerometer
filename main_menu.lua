@@ -22,10 +22,14 @@ function scene:create(event)
 	sceneGroup:insert(newTestButton)
 	sceneGroup:insert(loadTestButton)
 	sceneGroup:insert(displaySavedTestsButton)
+
+
+		print("main_menu_create") 
 end
 
 function scene:show(event)
 	if event.phase == "will" then
+		print("main_menu_show_will") 
     	composer.removeScene("adv_settings")
     	composer.removeScene("adv_settings_2")
     	composer.removeScene("test_settings")
@@ -34,6 +38,8 @@ function scene:show(event)
     	composer.removeScene("test_screen")
     	composer.removeScene("graphical_settings")
     	composer.removeScene("endgame")
+    	composer.removeScene("loaded")
+    	composer.removeScene("saved_tests")
 		newTestButton:addEventListener("touch", onNewTestButtonTouch)
 		loadTestButton:addEventListener("touch", onLoadTestButtonTouch)
 		displaySavedTestsButton:addEventListener("touch", onSavedTestsButtonTouch)
@@ -69,24 +75,5 @@ scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
 scene:addEventListener("hide", scene)
 scene:addEventListener("destroy", scene)
-
-local function onKeyEvent( event )
- 
-
-    -- If the "back" key was pressed on Android, prevent it from backing out of the app
-    if ( event.keyName == "back" ) then
-        if ( system.getInfo("platform") == "android" ) then
-			composer.gotoScene( "main_menu", "crossFade", 300 )
-            return true
-        end
-    end
- 
-    -- IMPORTANT! Return false to indicate that this app is NOT overriding the received key
-    -- This lets the operating system execute its default handling of the key
-    return false
-end
- 
--- Add the key event listener
-Runtime:addEventListener( "key", onKeyEvent )
 
 return scene
