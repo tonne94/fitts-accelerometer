@@ -110,7 +110,7 @@ function scene:show(event)
 	    for file in lfs.dir(path) do
 	        local theFile = system.pathForFile(file, system.DocumentsDirectory);
 
-	        for word in theFile:gmatch("([^\\]+)") do 
+	        for word in theFile:gmatch("([^/]+)") do 
 	        	nameOfFile=word
 	    	end
 	    	
