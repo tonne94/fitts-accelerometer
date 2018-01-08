@@ -63,8 +63,8 @@ function scene:create(event)
 		end
 		local subtask = ""  
 
-			for i=0, table.getn(x_submitted),1 do
-				if i==0 then
+			for i=1, table.getn(x_submitted),1 do
+				if i==1 then
 					k=0
 					subtask=subtask.."\t\t\t\t\"subtask["..i.."]\":".."\n\t\t\t\t{\n\t\t\t\t\t\"x_submitted\":"..x_submitted[i]..",\n\t\t\t\t\t\"y_submitted\":"..y_submitted[i]
     				..",\n\t\t\t\t\t\"x_real\":"..x_real[i]..",\n\t\t\t\t\t\"y_real\":"..y_real[i]..",\n\t\t\t\t\t\"time_submitted\":"..(time_submitted[i]-time_submitted[k])..",\n\t\t\t\t\t\"is_hit\":\""..hitValue[i].."\"\n\t\t\t\t},\n"
@@ -81,8 +81,8 @@ function scene:create(event)
 	        end
         subtask="\n\t\t\t\"subtasks\":\n\t\t\t{\n"..subtask.."\t\t\t}\n"
 
-        total_time=time_submitted[numCircles]-time_submitted[1]
-        avg_time=(time_submitted[numCircles]-time_submitted[1])/numCircles
+        total_time=time_submitted[numCircles]-time_submitted[0]
+        avg_time=total_time/numCircles
 		local task = ""
 		if switchSubmitStyle == true then
 			task=task.."\n\t\t\t\"amplitude\":"..testsArray[testNumber-1][1]..",\n\t\t\t\"target_size\":"..testsArray[testNumber-1][2]..",\n\t\t\t\"player_size\":"..testsArray[testNumber-1][3]
@@ -134,6 +134,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
+        print("test_counter_scene:show_will")
     	composer.removeScene("test_screen")
     	composer.removeScene("username")
 		nextButton:addEventListener("touch", onNextButtonTouch)

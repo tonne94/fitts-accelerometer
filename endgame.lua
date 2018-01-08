@@ -18,6 +18,7 @@ local halfH = screenH/2
 local numOfTests
 local username
 local testsText
+local timestamp=""
 
 function scene:create(event)
 	sceneGroup = self.view
@@ -60,15 +61,39 @@ function scene:create(event)
     mainMenuButton = display.newText("Go back to main menu", halfW, screenH-halfH/10-halfH/8, deafult, 60)
 	shareButton = display.newText("Share as JSON", halfW, screenH-halfH/10, deafult, 70)
 	
+	moreTextLabel = display.newText("Add more info in file name:", halfW, 3*halfH/4, deafult, 50)
+	-- Create text field
+	moreText = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
+    moreText.font = native.newFont( native.systemFont, 40 )
+    moreText.isEditable = true
+	moreText:addEventListener( "userInput", textListener )
+
 	sceneGroup:insert(nameOfFile)
+	sceneGroup:insert(nameOfFileText)
 	sceneGroup:insert(errorText)
 	sceneGroup:insert(mainMenuButton)
 	sceneGroup:insert(saveButton)
 	sceneGroup:insert(shareButton)
+	sceneGroup:insert(moreText)
+	sceneGroup:insert(moreTextLabel)
 end
 
+function textListener( event )
+ 
+    if ( event.phase == "began" ) then
+        -- User begins editing "defaultField"
+ 
+    elseif ( event.phase == "ended" or event.phase == "submitted" ) then
+        -- Output resulting text from "defaultField"ž
+ 
+    elseif ( event.phase == "editing" ) then
+    	nameOfFile.text = username..timestamp..moreText.text..".json"
+    end
+end
+ 
 function scene:show(event)
 	if event.phase == "will" then
+        print("endgame:show_will")
 		composer.removeScene("test_counter")
 		mainMenuButton:addEventListener("touch", onMainMenuTouch)
 		shareButton:addEventListener("touch", onShareButtonTouch)
@@ -79,11 +104,11 @@ function scene:show(event)
 		    print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
 		    if switch.isOn then
 		    	local t = os.date( '*t' )
-				timestamp=t.day..t.month..t.year
+				timestamp=t.day.."-"..t.month.."-"..t.year
 		    else
 		    	timestamp=""
 		    end
-				nameOfFile.text=username..timestamp..".json"
+				nameOfFile.text=username..timestamp..moreText.text..".json"
 		end
 		 
 		-- Create the widget

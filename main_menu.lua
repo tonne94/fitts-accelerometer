@@ -23,13 +23,11 @@ function scene:create(event)
 	sceneGroup:insert(loadTestButton)
 	sceneGroup:insert(displaySavedTestsButton)
 
-
-		print("main_menu_create") 
 end
 
 function scene:show(event)
 	if event.phase == "will" then
-		print("main_menu_show_will") 
+		print("main_menu_scene:show_will") 
     	composer.removeScene("adv_settings")
     	composer.removeScene("adv_settings_2")
     	composer.removeScene("test_settings")
@@ -40,6 +38,7 @@ function scene:show(event)
     	composer.removeScene("endgame")
     	composer.removeScene("loaded")
     	composer.removeScene("saved_tests")
+    	composer.removeScene("show_saved_test")
 		newTestButton:addEventListener("touch", onNewTestButtonTouch)
 		loadTestButton:addEventListener("touch", onLoadTestButtonTouch)
 		displaySavedTestsButton:addEventListener("touch", onSavedTestsButtonTouch)

@@ -15,7 +15,6 @@ local halfH = screenH/2
 
 local x = {}
 local y = {}
-
 --variables to store x and y coordinates and time when submit pressed
 local x_submitted  = {}
 local y_submitted  = {}
@@ -32,6 +31,8 @@ local numOfTests
 local thresholdValue
 local gainValue
 local username 
+
+local first_time = true
 
 function scene:create(event)
 	sceneGroup = self.view
@@ -85,6 +86,7 @@ function scene:create(event)
 	circle1:setFillColor(1,1,1,0)
 	circle1.strokeWidth = 2
 	circle1:setStrokeColor( 1, 1, 1 )
+	circle1.isVisible = false
 
 	for i=0,numCircles,1 do
 		x[i]=(-math.cos(math.pi/2+2*math.pi/numCircles*i)*radius)+halfW
@@ -127,6 +129,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
+        print("test_screen_scene:show_will")
 		composer.removeScene("test_counter")
 	end
 	if event.phase == "did" then
@@ -285,10 +288,16 @@ function onAccelerateRaw( event )
 
 	    if (thresholdValue/100)>math.abs(x_move) then
 			x_move = 0
+		else
+			first_time = false
+			dwellTimeStart=system.getTimer()
 		end
 
 	    if (thresholdValue/100)>math.abs(y_move) then
 			y_move = 0
+		else
+			first_time = false
+			dwellTimeStart=system.getTimer()
 		end
 
 		if lockSubmitStyle == 0 then
@@ -315,8 +324,10 @@ function onAccelerateRaw( event )
 
 		if switchSubmitStyle == false then
 			if dwellTimeEnd-dwellTimeStart>(dwellTimeValue*100) then
-				lockSubmitStyle = 0
-				onDwellSubmit()
+				if first_time == false then
+					lockSubmitStyle = 0
+					onDwellSubmit()
+				end
 			end
 		end
 
@@ -341,10 +352,16 @@ function onAccelerateGravity( event )
 	    y_move=event.yGravity
 	    if (thresholdValue/100)>math.abs(x_move) then
 			x_move = 0
+		else
+			first_time = false
+			dwellTimeStart=system.getTimer()
 		end
 
 	    if (thresholdValue/100)>math.abs(y_move) then
 			y_move = 0
+		else
+			first_time = false
+			dwellTimeStart=system.getTimer()
 		end
 
 		if lockSubmitStyle == 0 then
@@ -371,8 +388,10 @@ function onAccelerateGravity( event )
 
 		if switchSubmitStyle == false then
 			if dwellTimeEnd-dwellTimeStart>(dwellTimeValue*100) then
-				lockSubmitStyle = 0
-				onDwellSubmit()
+				if first_time == false then
+					lockSubmitStyle = 0
+					onDwellSubmit()
+				end
 			end
 		end
 

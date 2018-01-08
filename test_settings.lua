@@ -128,19 +128,21 @@ function scene:create(event)
 	sceneGroup:insert(sceneName)
 	sceneGroup:insert(nextButton)
     sceneGroup:insert(backButton)
-    --print("test_settings_create")
 end
 
 function onBackButtonTouch( event )
     if event.phase == "ended" then
-       	
-        composer.gotoScene( "adv_settings_2", "crossFade", 300 )
+	    if prevScene == "loaded" then
+	    	composer.gotoScene( "loaded", "crossFade", 300 )
+	    else
+	       	composer.gotoScene( "adv_settings_2", "crossFade", 300 )
+	    end
     end
 end
 
 function scene:show(event)
 	if event.phase == "will" then
-		print("test_settings_show_will")
+        print("test_settings_scene:show_will") 
     	--composer.removeScene("adv_settings_2")
     	composer.removeScene("graphical_settings")
     	composer.removeScene("loaded")

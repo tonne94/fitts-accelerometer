@@ -19,7 +19,7 @@ function scene:create(event)
 
 	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
     sceneNameBg:setFillColor(1,0,0, 0.5)
-	sceneName = display.newText("Last test loaded", halfW, halfH/15, deafult, 70)
+	sceneName = display.newText("Last test parametars loaded", halfW+halfH/15, halfH/15, deafult, 45)
 
 	displayVariables = display.newText("", halfW, halfH, deafult, 40)
     nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
@@ -41,6 +41,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
+		print("loaded_scene:show_will") 
         composer.removeScene("main_menu")
 		backButton:addEventListener("touch", onBackButtonTouch)
         nextButton:addEventListener("touch", onNextButtonTouch)

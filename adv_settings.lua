@@ -71,7 +71,6 @@ function scene:create(event)
     sceneGroup:insert(checkButton)
     sceneGroup:insert(nextButton)
     sceneGroup:insert(backButton)
-    print("adv_settings_create")
 end
 
 function onBackButtonTouch( event )
@@ -82,7 +81,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
-        print("adv_settings_show_will")
+        print("adv_settings_scene:show_will") 
         composer.removeScene("main_menu")
         composer.removeScene("adv_settings_2")
         nextButton:addEventListener("touch", onNextButtonTouch)

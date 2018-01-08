@@ -180,6 +180,7 @@ end
 function scene:show(event)
     -- Handle stepper events
     if event.phase == "will" then
+        print("graphical_settings:show_will")
     	composer.removeScene("test_settings")
 
         startButton:addEventListener("touch", onStartButtonTouch) 

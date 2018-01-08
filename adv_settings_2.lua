@@ -142,7 +142,6 @@ function scene:create(event)
 
 	sceneGroup:insert(nextButton)
 	sceneGroup:insert(backButton)
-    print("adv_settings_2_create")
 end
 
 function onBackButtonTouch( event )
@@ -153,7 +152,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
-    print("adv_settings_2_show_will")
+        print("adv_settings_2_scene:show_will") 
     	composer.removeScene("adv_settings")
     	composer.removeScene("test_settings")
 		nextButton:addEventListener("touch", onNextButtonTouch)

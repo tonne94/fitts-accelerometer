@@ -7,6 +7,7 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 local lfs = require "lfs";
+local widget = require( "widget" )
 
 local screenW = display.contentWidth
 local screenH = display.contentHeight
@@ -24,27 +25,7 @@ function scene:create(event)
 
 	savedTestsLabel = display.newText("", halfW, halfH, deafult, 40)
 
-	local path = system.pathForFile("", system.DocumentsDirectory);
-    local resultOK, errorMsg;
-    k=-2
-    for file in lfs.dir(path) do
-        local theFile = system.pathForFile(file, system.DocumentsDirectory);
-
-        for word in theFile:gmatch("([^\\]+)") do 
-        	nameOfFile=word
-    	end
-    	
-        k=k+1
-
-    	if k>0 then
-	        savedTests[k]=display.newText(nameOfFile, halfW, k*halfH/15+halfH/10, deafult, 30)
-			savedTests[k].name=nameOfFile
-			savedTests[k].index=k
-			sceneGroup:insert(savedTests[k])
-    	end
-    end 
-
-    backButton = display.newRect( 50, 50, 80, 80 )
+	backButton = display.newRect( 50, 50, 80, 80 )
 
 	sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)
@@ -54,23 +35,30 @@ function scene:create(event)
 
 end
 
-function scene:show(event)
-	if event.phase == "will" then
-		for i=1,k,1 do 
-			savedTests[i]:addEventListener("touch", onSavedTestPress)
-		end
-        backButton:addEventListener("touch", onBackButtonTouch)
-	end
-end
-
-function onBackButtonTouch( event )
-    if event.phase == "ended" then
-        composer.gotoScene( "main_menu", "crossFade", 300 )
+local function scrollListener( event )
+ 
+    local phase = event.phase
+    if ( phase == "began" ) then print( "Scroll view was touched" )
+    elseif ( phase == "moved" ) then print( "Scroll view was moved" )
+    elseif ( phase == "ended" ) then print( "Scroll view was released" )
     end
+ 
+    -- In the event a scroll limit is reached...
+    if ( event.limitReached ) then
+        if ( event.direction == "up" ) then print( "Reached bottom limit" )
+        elseif ( event.direction == "down" ) then print( "Reached top limit" )
+        elseif ( event.direction == "left" ) then print( "Reached right limit" )
+        elseif ( event.direction == "right" ) then print( "Reached left limit" )
+        end
+    end
+ 
+    return true
 end
 
 function onSavedTestPress( event )
-	if event.phase == "ended" then
+	print(event.phase)
+	if event.phase == "began" then
+	--[[
 		local name = event.target.name
 
 		local options =
@@ -81,8 +69,77 @@ function onSavedTestPress( event )
 		   attachment = { baseDir=system.DocumentsDirectory, filename=name, type="application/json" }
 		}
 		native.showPopup( "mail", options )
+		]]--
+		local name = event.target.name
+        local options = 
+		    { 
+		        effect = "crossFade", time = 300, 
+		        params = 
+		        { 
+		            nameOfFile = name
+		        } 
+		    }
+	    composer.gotoScene("show_saved_test", options)
+
 	end
 end
+
+function scene:show(event)
+	if event.phase == "will" then
+		print("saved_test_scene:show_will") 
+    	composer.removeScene("show_saved_test")
+    	composer.removeScene("main_menu")
+		
+        backButton:addEventListener("touch", onBackButtonTouch)
+
+        local scrollView = widget.newScrollView(
+		    {
+		        x=halfW,
+                y=halfH,
+		        width = screenW,
+		        height = screenH-200,
+		        backgroundColor = { 0.2, 0.2, 0.2 },
+		        scrollWidth = 0,
+		        scrollHeight = 0,
+		        listener = scrollListener
+		    }
+		)
+		local path = system.pathForFile("", system.DocumentsDirectory);
+	    local resultOK, errorMsg;
+	    k=-2
+	    for file in lfs.dir(path) do
+	        local theFile = system.pathForFile(file, system.DocumentsDirectory);
+
+	        for word in theFile:gmatch("([^\\]+)") do 
+	        	nameOfFile=word
+	    	end
+	    	
+	        k=k+1
+
+	    	if k>0 then
+		        savedTests[k]=display.newText(nameOfFile, halfW, k*halfH/10+halfH/10, deafult, 50)
+				savedTests[k].name=nameOfFile
+				savedTests[k].index=k
+				scrollView:insert(savedTests[k])
+	    	end
+	    end 
+
+	    for i=1, k, 1 do
+			savedTests[i]:addEventListener("touch", onSavedTestPress)
+    	end
+		--local background = display.newImageRect( "assets/scrollimage.png", 768, 1024 )
+		sceneGroup:insert(scrollView)
+	end
+end
+
+
+
+function onBackButtonTouch( event )
+    if event.phase == "ended" then
+        composer.gotoScene( "main_menu", "crossFade", 300 )
+    end
+end
+
 
 
 function scene:hide(event)

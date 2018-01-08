@@ -84,7 +84,6 @@ function scene:create(event)
     sceneGroup:insert(usernameTextField)
 	sceneGroup:insert(nextButton)
     sceneGroup:insert(backButton)
-    print("username_create")
 end
 
 function onBackButtonTouch( event )
@@ -112,7 +111,7 @@ end
 
 function scene:show(event)
 	if event.phase == "will" then
-    print("username_show_will")
+        print("username_scene:show_will")
     	composer.removeScene("test_settings")
     	backButton:addEventListener("touch", onBackButtonTouch)
 		nextButton:addEventListener("touch", onNextButtonTouch)
