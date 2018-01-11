@@ -22,6 +22,13 @@ local currentPlayerRadius = 50
 local switchRaw = true
 local switchGravity = false
 
+local isRed1 = false
+local isRed2 = false
+local isRed3 = false
+local isRed4 = false
+local isYellow2 = false
+local isYellow3 = false
+
 function scene:create(event)
 
     sceneGroup = self.view
@@ -34,6 +41,7 @@ function scene:create(event)
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
 	index = event.params.index
+	isLoaded = event.params.isLoaded
 	
 	currentNumCircles = tonumber(testsArray[index][4])
 	prevNumCircles = tonumber(testsArray[index][4])
@@ -65,19 +73,12 @@ function scene:create(event)
 	circlePlayer = display.newCircle( halfW, halfH, currentPlayerRadius )
 	circlePlayer:setFillColor( 0, 0, 1 )
 
-	if currentCircleSize < currentPlayerRadius then
-		circleSizeLabel:setFillColor(1,0,0)
-		playerSizeLabel:setFillColor(1,0,0)
-	elseif 	currentCircleSize == currentPlayerRadius then
-		circleSizeLabel:setFillColor(1,1,0)
-		playerSizeLabel:setFillColor(1,1,0)
-    else
-		circleSizeLabel:setFillColor(1,1,1)
-		playerSizeLabel:setFillColor(1,1,1)
-    end
+	checkRules()
 
 	--rectangle for start button
-    startButton = display.newRect( halfW, screenH-100, 150, 150 )
+    startButton = display.newImageRect("back_button.png", halfH/3, halfH/3 )
+	startButton.x = halfW
+	startButton.y = screenH-halfH/3
 
     sceneGroup:insert(circleDistance)
     sceneGroup:insert(circlePlayer)
@@ -93,6 +94,68 @@ function scene:create(event)
     sceneGroup:insert(labelInfoCircleSize)
     sceneGroup:insert(labelInfoPlayerSize)
 
+end
+
+function checkRules()
+	if currentCircleSize < currentPlayerRadius then
+		isRed2 = true
+		isRed3 = true
+	elseif 	currentCircleSize == currentPlayerRadius then
+		isRed2 = false
+		isRed3 = false
+		isYellow2 = true
+		isYellow3 = true
+	else
+		isRed2 = false
+		isRed3 = false
+		isYellow2 = false
+		isYellow3 = false
+    end
+
+    if 2*currentRadius+2*currentCircleSize > screenW then
+		isRed1 = true
+		isRed2 = true
+    elseif 	2*currentRadius+2*currentCircleSize == screenW then
+		isRed1 = false
+		isRed2 = false
+		isYellow1 = true
+		isYellow2 = true
+	else
+		isRed1 = false
+		isRed2 = false
+		isYellow1 = false
+		isYellow2 = false
+    end
+
+    if isYellow1 then
+    	radiusLabel:setFillColor(1,1,0)
+    end
+    if isYellow2 then
+    	circleSizeLabel:setFillColor(1,1,0)
+    end
+    if isYellow3 then
+    	playerSizeLabel:setFillColor(1,1,0)
+    end
+
+    if isRed1 then
+    	radiusLabel:setFillColor(1,0,0)
+    end
+    if isRed2 then
+    	circleSizeLabel:setFillColor(1,0,0)
+    end
+    if isRed3 then
+    	playerSizeLabel:setFillColor(1,0,0)
+    end
+
+    if not isRed1 and not isYellow1 then
+    	radiusLabel:setFillColor(1,1,1)
+    end
+    if not isRed2 and not isYellow2 then
+    	circleSizeLabel:setFillColor(1,1,1)
+    end
+    if not isRed3 and not isYellow3 then
+    	playerSizeLabel:setFillColor(1,1,1)
+    end
 end
 
 --preview circles around the radius called in stepper events
@@ -146,8 +209,8 @@ end
 --called when start button pressed
 function onStartButtonTouch( event )
     if event.phase == "ended" then
-	    if currentCircleSize < currentPlayerRadius then
-			toast.show('ERROR: Size of player is bigger than the size of target')
+	    if isRed1 or isRed2 or isRed3 then
+			toast.show('ERROR: Size of player is bigger than the size of target or test is exceeding the screen width')
         else
 
         	testsArray[index][1]=tonumber(radiusLabel.text)
@@ -168,7 +231,8 @@ function onStartButtonTouch( event )
 	                dwellTimeValue = dwellTimeValue,
                     numOfTests = numOfTests,
                     testNumber = testNumber,
-                    prevScene = "graphical_settings"
+                    prevScene = "graphical_settings",
+                    isLoaded = isLoaded
 		        } 
 		    }
 	    composer.gotoScene("test_settings", options)
@@ -207,6 +271,7 @@ function scene:show(event)
             radiusLabel.text=currentRadius
             circleDistance.path.radius = currentRadius
             drawCircles()
+            checkRules()
         end
 
         -- widget stepper for radius in which are the circles drawn
@@ -239,13 +304,7 @@ function scene:show(event)
 
             prevNumCircles=currentNumCircles
             drawCircles()
-            if currentCircleSize < currentPlayerRadius then
-				circleSizeLabel:setFillColor(1,0,0)
-				playerSizeLabel:setFillColor(1,0,0)
-            else
-				circleSizeLabel:setFillColor(1,1,1)
-				playerSizeLabel:setFillColor(1,1,1)
-            end
+            checkRules()
         end
 
         -- widget stepper for radius of circles drawn (targets)
@@ -276,17 +335,7 @@ function scene:show(event)
 	        end
 	        playerSizeLabel.text=currentPlayerRadius
 	        drawPlayerCircle()
-
-	        if currentCircleSize < currentPlayerRadius then
-				circleSizeLabel:setFillColor(1,0,0)
-				playerSizeLabel:setFillColor(1,0,0)
-			elseif 	currentCircleSize == currentPlayerRadius then
-				circleSizeLabel:setFillColor(1,1,0)
-				playerSizeLabel:setFillColor(1,1,0)
-            else
-				circleSizeLabel:setFillColor(1,1,1)
-				playerSizeLabel:setFillColor(1,1,1)
-            end
+            checkRules()
         end     
 
         -- widget stepper for radius of player circle drawn

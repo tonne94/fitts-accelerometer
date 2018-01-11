@@ -5,6 +5,7 @@
 ------------------------------------------------------------------------
 
 local composer = require( "composer" )
+local widget = require( "widget" )
 local scene = composer.newScene()
 
 local screenW = display.contentWidth
@@ -21,14 +22,17 @@ function scene:create(event)
     sceneNameBg:setFillColor(1,0,0, 0.5)
 	sceneName = display.newText("Last test parametars loaded", halfW+halfH/15, halfH/15, deafult, 45)
 
-	displayVariables = display.newText("", halfW, halfH, deafult, 40)
+	displayVariables = display.newText("", halfW, 0, deafult, 40)
+	displayVariables.anchorY=0
     nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
-    backButton = display.newRect( 50, 50, 80, 80 )
+	backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
+	backButton.x = halfH/15
+	backButton.y = halfH/15
 
 	sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)
     sceneGroup:insert(nextButton)
-	sceneGroup:insert(displayVariables)
+	--sceneGroup:insert(displayVariables)
     sceneGroup:insert(backButton)
 
 end
@@ -43,6 +47,7 @@ function scene:show(event)
 	if event.phase == "will" then
 		print("loaded_scene:show_will") 
         composer.removeScene("main_menu")
+        composer.removeScene("test_settings")
 		backButton:addEventListener("touch", onBackButtonTouch)
         nextButton:addEventListener("touch", onNextButtonTouch)
 
@@ -66,33 +71,48 @@ function scene:show(event)
 	        	i=i+1
 	        end
 
-	        testNumber = tonumber(line[1]) 
-	        numOfTests = tonumber(line[2]) 
-	        if tonumber(line[3])==1 then
+	        numOfTests = tonumber(line[1]) 
+	        if tonumber(line[2])==1 then
 				switchAccelerometer = true
 			else
 				switchAccelerometer = false
 			end
-			gainValue = tonumber(line[4]) 
-			thresholdValue = tonumber(line[5]) 
+			gainValue = tonumber(line[3]) 
+			thresholdValue = tonumber(line[4]) 
 
-	 		if tonumber(line[6])==1 then
+	 		if tonumber(line[5])==1 then
 				switchSubmitStyle = true
 			else
 				switchSubmitStyle = false
 			end
 
-		    dwellTimeValue = tonumber(line[7])
+		    dwellTimeValue = tonumber(line[6])
 		    
 		    for i=1, numOfTests, 1 do
 		    	k=1
 		    	testsArray[i] = {}
-				for word in line[i+7]:gmatch("(.-),") do 
+				for word in line[i+6]:gmatch("(.-),") do 
 		        	testsArray[i][k]=tonumber(word)
 		        	k=k+1
 	        	end
 		    end  
 		end
+
+		local scrollView = widget.newScrollView(
+		    {
+		        x=halfW,
+                y=halfH,
+		        width = screenW,
+		        height = screenH-halfH/3,
+		        backgroundColor = { 0.2, 0.2, 0.2 },
+		        scrollWidth = 0,
+		        scrollHeight = 0,
+		        listener = scrollListener
+		    }
+		)
+		scrollView:insert(displayVariables)
+		sceneGroup:insert(scrollView)
+
 	end
 end
 

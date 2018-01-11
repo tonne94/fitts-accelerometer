@@ -22,6 +22,8 @@ local numOfTests
 local thresholdValue
 local gainValue
 local username
+local subtaskTime = {}
+
 function scene:create(event)
 	sceneGroup = self.view
 
@@ -61,28 +63,37 @@ function scene:create(event)
 			end
 
 		end
+		print(time_submitted[0][2])
+		if switchSubmitStyle==true then
+        	total_time=time_submitted[table.getn(time_submitted)][1]-time_submitted[0][2]
+        else
+        	total_time=time_submitted[table.getn(time_submitted)][1]-time_submitted[1][1]
+        end
+
+        for i=1, table.getn(time_submitted), 1 do
+        	subtaskTime[i]=time_submitted[i][1]-time_submitted[i-1][2]
+        end
+        sum = 0
+        for i=1, numCircles, 1 do 
+        	sum = sum + subtaskTime[i]
+        end
+        avg_time= sum/numCircles
+        print(numCircles)
 		local subtask = ""  
 
 			for i=1, table.getn(x_submitted),1 do
-				if i==1 then
-					k=0
+				if i==table.getn(x_submitted) then
 					subtask=subtask.."\t\t\t\t\"subtask["..i.."]\":".."\n\t\t\t\t{\n\t\t\t\t\t\"x_submitted\":"..x_submitted[i]..",\n\t\t\t\t\t\"y_submitted\":"..y_submitted[i]
-    				..",\n\t\t\t\t\t\"x_real\":"..x_real[i]..",\n\t\t\t\t\t\"y_real\":"..y_real[i]..",\n\t\t\t\t\t\"time_submitted\":"..(time_submitted[i]-time_submitted[k])..",\n\t\t\t\t\t\"is_hit\":\""..hitValue[i].."\"\n\t\t\t\t},\n"
-				elseif i==table.getn(x_submitted) then
-					k=i-1
-					subtask=subtask.."\t\t\t\t\"subtask["..i.."]\":".."\n\t\t\t\t{\n\t\t\t\t\t\"x_submitted\":"..x_submitted[i]..",\n\t\t\t\t\t\"y_submitted\":"..y_submitted[i]
-    				..",\n\t\t\t\t\t\"x_real\":"..x_real[i]..",\n\t\t\t\t\t\"y_real\":"..y_real[i]..",\n\t\t\t\t\t\"time_submitted\":"..(time_submitted[i]-time_submitted[k])..",\n\t\t\t\t\t\"is_hit\":\""..hitValue[i].."\"\n\t\t\t\t}\n"
+    				..",\n\t\t\t\t\t\"x_real\":"..x_real[i]..",\n\t\t\t\t\t\"y_real\":"..y_real[i]..",\n\t\t\t\t\t\"time_submitted\":"..subtaskTime[i]..",\n\t\t\t\t\t\"is_hit\":\""..hitValue[i].."\"\n\t\t\t\t}\n"
 				else
-					k=i-1
 					subtask=subtask.."\t\t\t\t\"subtask["..i.."]\":".."\n\t\t\t\t{\n\t\t\t\t\t\"x_submitted\":"..x_submitted[i]..",\n\t\t\t\t\t\"y_submitted\":"..y_submitted[i]
-    				..",\n\t\t\t\t\t\"x_real\":"..x_real[i]..",\n\t\t\t\t\t\"y_real\":"..y_real[i]..",\n\t\t\t\t\t\"time_submitted\":"..(time_submitted[i]-time_submitted[k])..",\n\t\t\t\t\t\"is_hit\":\""..hitValue[i].."\"\n\t\t\t\t},\n"
+    				..",\n\t\t\t\t\t\"x_real\":"..x_real[i]..",\n\t\t\t\t\t\"y_real\":"..y_real[i]..",\n\t\t\t\t\t\"time_submitted\":"..subtaskTime[i]..",\n\t\t\t\t\t\"is_hit\":\""..hitValue[i].."\"\n\t\t\t\t},\n"
 				end
     			
 	        end
         subtask="\n\t\t\t\"subtasks\":\n\t\t\t{\n"..subtask.."\t\t\t}\n"
 
-        total_time=time_submitted[numCircles]-time_submitted[0]
-        avg_time=total_time/numCircles
+
 		local task = ""
 		if switchSubmitStyle == true then
 			task=task.."\n\t\t\t\"amplitude\":"..testsArray[testNumber-1][1]..",\n\t\t\t\"target_size\":"..testsArray[testNumber-1][2]..",\n\t\t\t\"player_size\":"..testsArray[testNumber-1][3]

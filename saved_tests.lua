@@ -25,13 +25,14 @@ function scene:create(event)
 
 	savedTestsLabel = display.newText("", halfW, halfH, deafult, 40)
 
-	backButton = display.newRect( 50, 50, 80, 80 )
+	backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
+	backButton.x = halfH/15
+	backButton.y = halfH/15
 
 	sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)
 	sceneGroup:insert(savedTestsLabel)
     sceneGroup:insert(backButton)
-
 
 end
 
@@ -58,18 +59,7 @@ end
 function onSavedTestPress( event )
 	print(event.phase)
 	if event.phase == "began" then
-	--[[
-		local name = event.target.name
 
-		local options =
-		{
-		   to = "antonio.bradicic@hotmail.com",
-		   subject = "Results",
-		   body = "",
-		   attachment = { baseDir=system.DocumentsDirectory, filename=name, type="application/json" }
-		}
-		native.showPopup( "mail", options )
-		]]--
 		local name = event.target.name
         local options = 
 		    { 
@@ -97,7 +87,7 @@ function scene:show(event)
 		        x=halfW,
                 y=halfH,
 		        width = screenW,
-		        height = screenH-200,
+		        height = screenH-halfH/3,
 		        backgroundColor = { 0.2, 0.2, 0.2 },
 		        scrollWidth = 0,
 		        scrollHeight = 0,
@@ -110,7 +100,7 @@ function scene:show(event)
 	    for file in lfs.dir(path) do
 	        local theFile = system.pathForFile(file, system.DocumentsDirectory);
 
-	        for word in theFile:gmatch("([^/]+)") do 
+	        for word in theFile:gmatch("([^\\]+)") do 
 	        	nameOfFile=word
 	    	end
 	    	
@@ -139,8 +129,6 @@ function onBackButtonTouch( event )
         composer.gotoScene( "main_menu", "crossFade", 300 )
     end
 end
-
-
 
 function scene:hide(event)
 end

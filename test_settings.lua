@@ -7,6 +7,7 @@
 local composer = require( "composer" )
 local toast = require('plugin.toast')
 local scene = composer.newScene()
+local widget = require( "widget" )
 
 local screenW = display.contentWidth
 local screenH = display.contentHeight
@@ -25,10 +26,11 @@ local gainValu
 local switchAccelerometer
 local switchSubmitStyle
 local dwellTimeValue
+local isLoaded=false
 
 function scene:create(event)
 	sceneGroup = self.view
-
+	print(screenW)
 	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
 	sceneNameBg:setFillColor(1,0,0, 0.5)
 	sceneName= display.newText("Tests:", halfW, halfH/15, deafult, 70)
@@ -78,6 +80,7 @@ function scene:create(event)
 		numOfTests = event.params.numOfTests
 		testsArray = event.params.testsArray
         dwellTimeValue = event.params.dwellTimeValue
+        isLoaded = event.params.isLoaded
 
 	elseif prevScene == "loaded" then
  		thresholdValue = event.params.thresholdValue
@@ -100,29 +103,34 @@ function scene:create(event)
         isLoaded = event.params.isLoaded
 	end
 
-	isRed=false
+	isRedTarget = false
+	isRedSize = false
 
 	for i=1, numOfTests, 1 do 
 		numTestsInfo[i]=display.newText("Test["..i.."]: "..testsArray[i][1]..", "..testsArray[i][2]
-						..", "..testsArray[i][3]..", "..testsArray[i][4], halfW, i*halfH/15+halfH/10, deafult, 30)
+						..", "..testsArray[i][3]..", "..testsArray[i][4], halfW, i*halfH/11+halfH/10, deafult, 40)
 		numTestsInfo[i].index=i
 
 		if testsArray[i][2]==testsArray[i][3] then
 			numTestsInfo[i]:setFillColor(1,1,0)
 		elseif testsArray[i][2]<testsArray[i][3] then
 			numTestsInfo[i]:setFillColor(1,0,0)
-			isRed=true
+			isRedTarget=true
 		end
 
-		sceneGroup:insert(numTestsInfo[i])
+		if 2*testsArray[i][1]+2*testsArray[i][2]>screenW then
+			numTestsInfo[i]:setFillColor(1,0,0)
+			isRedSize=true
+		end
 	end
 
 	testNumber=1
 
 	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
 
-    backButton = display.newRect( 50, 50, 80, 80 )
-
+    backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
+	backButton.x = halfH/15
+	backButton.y = halfH/15
 
 	sceneGroup:insert(sceneNameBg)
 	sceneGroup:insert(sceneName)
@@ -132,7 +140,7 @@ end
 
 function onBackButtonTouch( event )
     if event.phase == "ended" then
-	    if prevScene == "loaded" then
+	    if prevScene == "loaded" or isLoaded == true then
 	    	composer.gotoScene( "loaded", "crossFade", 300 )
 	    else
 	       	composer.gotoScene( "adv_settings_2", "crossFade", 300 )
@@ -150,10 +158,47 @@ function scene:show(event)
 
 		nextButton:addEventListener("touch", onNextButtonTouch)
         backButton:addEventListener("touch", onBackButtonTouch)
+
+        local scrollView = widget.newScrollView(
+		    {
+		        x=halfW,
+                y=halfH,
+		        width = screenW,
+		        height = screenH-halfH/3,
+		        backgroundColor = { 0.2, 0.2, 0.2 },
+		        scrollWidth = 0,
+		        scrollHeight = 0,
+		        listener = scrollListener
+		    }
+		)
+
 		for j=1,numOfTests,1 do 
+			scrollView:insert(numTestsInfo[j])
 			numTestsInfo[j]:addEventListener("touch", onTestPress)
 		end
+
+		sceneGroup:insert(scrollView)
 	end
+end
+
+local function scrollListener( event )
+ 
+    local phase = event.phase
+    if ( phase == "began" ) then print( "Scroll view was touched" )
+    elseif ( phase == "moved" ) then print( "Scroll view was moved" )
+    elseif ( phase == "ended" ) then print( "Scroll view was released" )
+    end
+ 
+    -- In the event a scroll limit is reached...
+    if ( event.limitReached ) then
+        if ( event.direction == "up" ) then print( "Reached bottom limit" )
+        elseif ( event.direction == "down" ) then print( "Reached top limit" )
+        elseif ( event.direction == "left" ) then print( "Reached right limit" )
+        elseif ( event.direction == "right" ) then print( "Reached left limit" )
+        end
+    end
+ 
+    return true
 end
 
 function scene:hide(event)
@@ -164,8 +209,10 @@ end
 
 function onNextButtonTouch( event )
 	if event.phase == "ended" then
-		if isRed then
-			toast.show("ERROR: Size of player is bigger than the size of target in one of the tests")
+		if isRedTarget then
+			toast.show("ERROR: Size of PLAYER is bigger than the size of target in one of the tests")
+		elseif isRedSize then
+			toast.show("ERROR: Test size is exceeding the size of the screen width")
         else
         	--go to username screen
 			local options = 
@@ -181,7 +228,7 @@ function onNextButtonTouch( event )
                     	dwellTimeValue = dwellTimeValue,
 	                    numOfTests = numOfTests,
 	                    testNumber = testNumber,
-	                    isLoaded = false
+	                    isLoaded = isLoaded
 			        } 
 			    }
 		    composer.gotoScene("username", options)
@@ -191,7 +238,7 @@ end
 
 
 function onTestPress( event )
-	if event.phase == "ended" then
+	if event.phase == "began" then
 		index = event.target.index
 		local options = 
 		    { 
@@ -204,7 +251,8 @@ function onTestPress( event )
                     switchAccelerometer = switchAccelerometer,
                     dwellTimeValue = dwellTimeValue,
                     numOfTests = numOfTests,
-		            index = index
+		            index = index,
+		            isLoaded = isLoaded
 		        } 
 		    }
 	    composer.gotoScene("graphical_settings", options)

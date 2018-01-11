@@ -113,7 +113,9 @@ function scene:create(event)
 	dwellTimeHideRect:setFillColor( 0, 0, 0 )
 
 	nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
-    backButton = display.newRect( 50, 50, 80, 80 )
+    backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
+	backButton.x = halfH/15
+	backButton.y = halfH/15
 
     sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)

@@ -30,6 +30,7 @@ function scene:create(event)
 	nameOfFile = display.newText(username..".json", halfW, halfH/4, deafult, 60)
 	errorText = display.newText("", halfW, halfH/2+50, deafult, 20)
 	errorText:setFillColor(1,0,0)
+	errorText.isVisible = false
 	testsText=""
 
 	for i=1, numOfTests,1 do
@@ -50,7 +51,8 @@ function scene:create(event)
 		if result then
 		   errorText.text = "File removed" 
 		else
-		  errorText.text = "File does not exist".. reason   --> File does not exist    apple.txt: No such file or directory
+			errorText.isVisible = true
+	  		errorText.text = "File does not exist".. reason   --> File does not exist    apple.txt: No such file or directory
 		end
 	end
 
@@ -137,7 +139,22 @@ end
 function scene:destroy(event)
 end
 function onSaveButtonTouch( event )
+	print(event)
 	if event.phase == "ended" then
+		local path = system.pathForFile(nameOfFile.text, system.DocumentsDirectory)
+		local file, errorString = io.open( path, "w" )
+		if not file then
+		-- Error occurred; output the cause
+		    print("File error: " .. errorString)
+		    toast.show("ERROR: File not saved")
+		else
+		    -- Write data to file
+		    file:write( testsText )
+		    -- Close the file handle
+		    io.close( file )
+		    toast.show("File "..nameOfFile.text.." saved!")
+		end
+	elseif event == "share" then
 		local path = system.pathForFile(nameOfFile.text, system.DocumentsDirectory)
 		local file, errorString = io.open( path, "w" )
 		if not file then
@@ -162,6 +179,7 @@ end
 
 function onShareButtonTouch( event )
 	if event.phase == "ended" then
+		onSaveButtonTouch("share")
 		local options =
 		{
 		   to = "antonio.bradicic@hotmail.com",

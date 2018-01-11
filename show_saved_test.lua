@@ -25,7 +25,10 @@ function scene:create(event)
     sceneNameBg:setFillColor(1,0,0, 0.5)
 	sceneName = display.newText(nameOfFile, halfW+halfH/15, halfH/15, deafult, 50)
 
-	backButton = display.newRect( 50, 50, 80, 80 )
+	backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
+	backButton.x = halfH/15
+	backButton.y = halfH/15
+	
 	shareButton = display.newText("SHARE", halfW/2, screenH-halfH/13, deafult, 80)
 	deleteButton = display.newText("DELETE", screenW-halfW/2, screenH-halfH/13, deafult, 80)
 	deleteButton:setFillColor(1,0,0)
@@ -91,7 +94,7 @@ end
 function onDeleteButtonTouch( event )
 	if event.phase == "ended" then
 		moreText.isVisible = false
-		deletePrompt = display.newRect( halfW, halfH, 500, 300 )
+		deletePrompt = display.newRect( halfW, halfH, screenW-halfW/4, halfH/2 )
 		deletePrompt.stroke = { 1, 0, 0 }
 		deletePrompt.strokeWidth = 4
 		deletePrompt:setFillColor(0)

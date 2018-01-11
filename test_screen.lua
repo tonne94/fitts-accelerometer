@@ -50,11 +50,19 @@ function scene:create(event)
   	circleSize = event.params.circleSize
   	playerSize = event.params.playerSize
 
+	for f=0,numCircles do
+	    time_submitted[f] = {}
+	    for g=0,2 do
+	        time_submitted[f][g] = 0
+	    end
+	end
+
 	testNumber = event.params.testNumber
 	testsArray = event.params.testsArray
 	switchAccelerometer = event.params.switchAccelerometer	
 	switchSubmitStyle = event.params.switchSubmitStyle
     dwellTimeValue = event.params.dwellTimeValue
+
 	numOfTests = event.params.numOfTests
 	thresholdValue = event.params.thresholdValue
 	gainValue = event.params.gainValue
@@ -100,6 +108,13 @@ function scene:create(event)
 	countText = display.newText( "0", halfW, halfH-100, deafult, 20)
 	coordinates = display.newText( "KOORDINATE", halfW, halfH-450, deafult, 20)
 	screenSize = display.newText( "SCREEN WIDTH"..display.pixelWidth.."\nSCREEN HEIGHT"..screenH, halfW, halfH-400, deafult, 20)
+
+	coordinates.isVisible = false
+	screenSize.isVisible = false
+	countText.isVisible = false
+	textX.isVisible = false
+	textY.isVisible = false
+	textZ.isVisible = false
 
 	targetCircle = display.newCircle( -200, -200, circleSize )
 	changeTarget(activeIndex)
@@ -186,53 +201,11 @@ function updateIndex( event )
 	end
 end
 
-function onDwellSubmit ( event ) 
-	time_submitted[circleCounter]=system.getTimer()
-	x_submitted[activeIndex] = circlePlayer.x
-	y_submitted[activeIndex] = circlePlayer.y
-	local x_diff = math.abs(circlePlayer.x-x[activeIndex])
-	local y_diff = math.abs(circlePlayer.y-y[activeIndex])
-	if (x_diff <= circleSize-playerSize) and (y_diff <= circleSize-playerSize) then
-		hit[activeIndex]=true
-	else
-		hit[activeIndex]=false
-	end
-	updateIndex()	
-	if circleCounter == numCircles then
-		local options = 
-        { 
-            effect = "crossFade", time = 300, 
-            params = 
-            { 
-                x_submitted = x_submitted,
-                y_submitted = y_submitted,
-                x_real = x,
-                y_real = y,
-                numCircles = numCircles,
-                time_submitted = time_submitted,
-                hit = hit,
-                username=username,
-
-				testNumber = testNumber,
-				thresholdValue = thresholdValue,
-				gainValue = gainValue,
-	            switchAccelerometer = switchAccelerometer,
-				switchSubmitStyle = switchSubmitStyle,
-                dwellTimeValue = dwellTimeValue,
-	            numOfTests = numOfTests,
-				testsArray = testsArray
-            } 
-        }
-		composer.gotoScene( "test_counter", options )
-		endgame = 1
-	end
-	circleCounter = circleCounter + 1
-	changeTarget(activeIndex)
-end
-
-function onSubmitTouch( event )
-	if event.phase == "ended" then
-		time_submitted[circleCounter]=system.getTimer()
+function onDwellSubmit (event) 
+	if event == "began" then
+		time_submitted[circleCounter][1]=system.getTimer()
+	elseif event == "ended" then
+		time_submitted[circleCounter][2]=system.getTimer()
 		x_submitted[activeIndex] = circlePlayer.x
 		y_submitted[activeIndex] = circlePlayer.y
 		local x_diff = math.abs(circlePlayer.x-x[activeIndex])
@@ -273,6 +246,57 @@ function onSubmitTouch( event )
 		end
 		circleCounter = circleCounter + 1
 		changeTarget(activeIndex)
+		first_time = true
+	end
+end
+
+function onSubmitTouch( event )
+	print(system.getTimer())
+	if event.phase == "began" then
+		time_submitted[circleCounter][1]=system.getTimer()
+		x_submitted[activeIndex] = circlePlayer.x
+		y_submitted[activeIndex] = circlePlayer.y
+		local x_diff = math.abs(circlePlayer.x-x[activeIndex])
+		local y_diff = math.abs(circlePlayer.y-y[activeIndex])
+		if (x_diff <= circleSize-playerSize) and (y_diff <= circleSize-playerSize) then
+			hit[activeIndex]=true
+		else
+			hit[activeIndex]=false
+		end
+		updateIndex()	
+		if circleCounter == numCircles then
+			local options = 
+	        { 
+	            effect = "crossFade", time = 300, 
+	            params = 
+	            { 
+	                x_submitted = x_submitted,
+	                y_submitted = y_submitted,
+	                x_real = x,
+	                y_real = y,
+	                numCircles = numCircles,
+	                time_submitted = time_submitted,
+	                hit = hit,
+	                username=username,
+
+					testNumber = testNumber,
+					thresholdValue = thresholdValue,
+					gainValue = gainValue,
+		            switchAccelerometer = switchAccelerometer,
+					switchSubmitStyle = switchSubmitStyle,
+	                dwellTimeValue = dwellTimeValue,
+		            numOfTests = numOfTests,
+					testsArray = testsArray
+	            } 
+	        }
+			composer.gotoScene( "test_counter", options )
+			endgame = 1
+		end
+	end
+	if event.phase == "ended" then
+		time_submitted[circleCounter][2]=system.getTimer()
+		circleCounter = circleCounter + 1
+		changeTarget(activeIndex)
 	end
 end
 
@@ -289,6 +313,9 @@ function onAccelerateRaw( event )
 	    if (thresholdValue/100)>math.abs(x_move) then
 			x_move = 0
 		else
+			if first_time then
+				onDwellSubmit("began")
+			end
 			first_time = false
 			dwellTimeStart=system.getTimer()
 		end
@@ -296,6 +323,9 @@ function onAccelerateRaw( event )
 	    if (thresholdValue/100)>math.abs(y_move) then
 			y_move = 0
 		else
+			if first_time then
+				onDwellSubmit("began")
+			end
 			first_time = false
 			dwellTimeStart=system.getTimer()
 		end
@@ -326,7 +356,7 @@ function onAccelerateRaw( event )
 			if dwellTimeEnd-dwellTimeStart>(dwellTimeValue*100) then
 				if first_time == false then
 					lockSubmitStyle = 0
-					onDwellSubmit()
+					onDwellSubmit("ended")
 				end
 			end
 		end
@@ -350,9 +380,12 @@ function onAccelerateGravity( event )
 	    textZ.text = "Z:"..event.zGravity
 		x_move=event.xGravity
 	    y_move=event.yGravity
-	    if (thresholdValue/100)>math.abs(x_move) then
+	   	if (thresholdValue/100)>math.abs(x_move) then
 			x_move = 0
 		else
+			if first_time then
+				time_submitted[circleCounter][2]=system.getTimer()
+			end
 			first_time = false
 			dwellTimeStart=system.getTimer()
 		end
@@ -360,6 +393,9 @@ function onAccelerateGravity( event )
 	    if (thresholdValue/100)>math.abs(y_move) then
 			y_move = 0
 		else
+			if first_time then
+				time_submitted[circleCounter][2]=system.getTimer()
+			end
 			first_time = false
 			dwellTimeStart=system.getTimer()
 		end
