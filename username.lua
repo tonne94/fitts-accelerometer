@@ -73,13 +73,17 @@ function scene:create(event)
 	    io.close( file )
 	end
 
-	usernameText = display.newText("Username:", halfW, 3*halfH/4, deafult, 50)
-    usernameTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
+	usernameText = display.newText("Username:", halfW, 2*halfH/3, deafult, screenH/20)
+    usernameTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, screenH/21)
     usernameTextField.font = native.newFont( native.systemFont, 40 )
     usernameTextField.isEditable = true
 	usernameTextField.text="user"
 
-	nextButton = display.newText("START TESTING", halfW, screenH-halfH/10, deafult, 80)
+	nextButton = display.newText("START TEST", halfW, screenH-halfH/9, deafult, screenH/16)
+    nextButtonRect = display.newRect(halfW, screenH-halfH/9, nextButton.width, nextButton.height)
+    nextButtonRect:setFillColor (0.2,0.2,0.2)
+    nextButtonRect.stroke = { 0.8, 0.8, 1 }
+    nextButtonRect.strokeWidth = 4
 
    	backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
 	backButton.x = halfH/15
@@ -87,6 +91,7 @@ function scene:create(event)
 
 	sceneGroup:insert(usernameText)
     sceneGroup:insert(usernameTextField)
+	sceneGroup:insert(nextButtonRect)
 	sceneGroup:insert(nextButton)
     sceneGroup:insert(backButton)
 end

@@ -21,9 +21,9 @@ function scene:create(event)
 
 	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
     sceneNameBg:setFillColor(1,0,0, 0.5)
-	sceneName = display.newText("Saved tests", halfW, halfH/15, deafult, 70)
+	sceneName = display.newText("Saved tests", halfW, halfH/15, deafult, screenH/18)
 
-	savedTestsLabel = display.newText("", halfW, halfH, deafult, 40)
+	savedTestsLabel = display.newText("", halfW, halfH, deafult, screenH/32)
 
 	backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
 	backButton.x = halfH/15
@@ -100,14 +100,14 @@ function scene:show(event)
 	    for file in lfs.dir(path) do
 	        local theFile = system.pathForFile(file, system.DocumentsDirectory);
 
-	        for word in theFile:gmatch("([^\\]+)") do 
+	        for word in theFile:gmatch("([^/]+)") do 
 	        	nameOfFile=word
 	    	end
 	    	
 	        k=k+1
 
 	    	if k>0 then
-		        savedTests[k]=display.newText(nameOfFile, halfW, k*halfH/10+halfH/10, deafult, 50)
+		        savedTests[k]=display.newText(nameOfFile, halfW, k*halfH/10+halfH/10, deafult, screenH/25)
 				savedTests[k].name=nameOfFile
 				savedTests[k].index=k
 				scrollView:insert(savedTests[k])

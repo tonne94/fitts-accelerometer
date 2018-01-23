@@ -23,14 +23,24 @@ function scene:create(event)
 
 	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
     sceneNameBg:setFillColor(1,0,0, 0.5)
-	sceneName = display.newText(nameOfFile, halfW+halfH/15, halfH/15, deafult, 50)
+	sceneName = display.newText(nameOfFile, halfW+halfH/15, halfH/15, deafult, screenH/25)
 
 	backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
 	backButton.x = halfH/15
 	backButton.y = halfH/15
 	
-	shareButton = display.newText("SHARE", halfW/2, screenH-halfH/13, deafult, 80)
-	deleteButton = display.newText("DELETE", screenW-halfW/2, screenH-halfH/13, deafult, 80)
+	shareButton = display.newText("SHARE", halfW/2, screenH-halfH/12, deafult, screenH/16)
+    shareButtonRect = display.newRect(halfW/2, screenH-halfH/12, shareButton.width+halfW/20, shareButton.height)
+    shareButtonRect:setFillColor (0.2,0.2,0.2)
+    shareButtonRect.stroke = { 0.8, 0.8, 1 }
+    shareButtonRect.strokeWidth = 4
+
+	deleteButton = display.newText("DELETE", screenW-halfW/2, screenH-halfH/12, deafult, screenH/16)
+    deleteButtonRect = display.newRect(screenW-halfW/2, screenH-halfH/12, deleteButton.width+halfW/20, deleteButton.height)
+    deleteButtonRect:setFillColor (0.2,0.2,0.2)
+    deleteButtonRect.stroke = { 0.8, 0.8, 1 }
+    deleteButtonRect.strokeWidth = 4
+
 	deleteButton:setFillColor(1,0,0)
 
 	local path = system.pathForFile(nameOfFile, system.DocumentsDirectory)
@@ -46,16 +56,18 @@ function scene:create(event)
 	    -- Close the file handle
 	    io.close( file )
 	end
-	moreText = native.newTextBox(halfW, halfH, screenW, screenH-screenH/5)
+	moreText = native.newTextBox(halfW, halfH, screenW, screenH-halfH/3)
 	moreText.text= readText
-	moreText.font = native.newFont( native.systemFont, 35 )
+	moreText.font = native.newFont( native.systemFont, screenH/36 )
 	sceneGroup:insert(moreText)
 
 	sceneGroup:insert(sceneNameBg)
     sceneGroup:insert(sceneName)
+    sceneGroup:insert(shareButtonRect)
     sceneGroup:insert(shareButton)
-	sceneGroup:insert(backButton)
+    sceneGroup:insert(deleteButtonRect)
 	sceneGroup:insert(deleteButton)
+	sceneGroup:insert(backButton)
 end
 
 local function scrollListener( event )
@@ -95,19 +107,19 @@ function onDeleteButtonTouch( event )
 	if event.phase == "ended" then
 		moreText.isVisible = false
 		deletePrompt = display.newRect( halfW, halfH, screenW-halfW/4, halfH/2 )
-		deletePrompt.stroke = { 1, 0, 0 }
+		deletePrompt.stroke = { 0.8, 0.8, 1 }
 		deletePrompt.strokeWidth = 4
-		deletePrompt:setFillColor(0)
+		deletePrompt:setFillColor(0.2,0.2,0.2)
 
-		promptLabel = display.newText("Are you sure you want to delete?", halfW, halfH-halfH/6, deafult, 30)
+		promptLabel = display.newText("Are you sure you want to delete?", halfW, halfH-halfH/6, deafult, screenH/42)
 
-		promptFileName = display.newText(nameOfFile, halfW, halfH-halfH/15, deafult, 45)
+		promptFileName = display.newText(nameOfFile, halfW, halfH-halfH/15, deafult, screenH/28)
 		promptFileName:setFillColor(1,0,0.5)
 
-		buttonYes = display.newText("YES", halfW-halfW/3, halfH+halfH/7, deafult, 80)
+		buttonYes = display.newText("YES", halfW-halfW/3, halfH+halfH/7, deafult, screenH/16)
 		buttonYes:setFillColor(0,1,0)
 
-		buttonNo = display.newText("NO", halfW+halfW/3, halfH+halfH/7, deafult, 80)
+		buttonNo = display.newText("NO", halfW+halfW/3, halfH+halfH/7, deafult, screenH/16)
 		buttonNo:setFillColor(1,0,0)
 
 		groupPrompt.isVisible = true

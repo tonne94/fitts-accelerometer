@@ -25,44 +25,53 @@ function scene:create(event)
 
     sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
     sceneNameBg:setFillColor(1,0,0, 0.5)
-	sceneName = display.newText("Settings", halfW, halfH/15, deafult, 70)
+	sceneName = display.newText("Settings", halfW, halfH/15, deafult, screenH/18)
 
-	amplitudesInfo = display.newText("Amplitudes:", halfW, halfH/4, deafult, 50)
-	amplitudesTextField = native.newTextField(halfW, halfH/4+halfH/9, screenW-halfW/4, 60)
-    amplitudesTextField.font = native.newFont( native.systemFont, 40 )
+    textSize40=screenH/32
+    textSize50=screenH/25
+    textSize60=screenH/21
+
+	amplitudesInfo = display.newText("Amplitudes:", halfW, halfH/4, deafult, textSize50)
+	amplitudesTextField = native.newTextField(halfW, halfH/4+halfH/9, screenW-halfW/4, textSize60)
+    amplitudesTextField.font = native.newFont( native.systemFont, textSize40 )
     amplitudesTextField.isEditable = true
     amplitudesTextField.text = "150;200;250;"
     amplitudesTextField:addEventListener( "userInput", textListener )
     
-	targetSizesInfo = display.newText("Target sizes:", halfW, halfH/2, deafult, 50)
-    targetSizesTextField = native.newTextField(halfW, halfH/2+halfH/9, screenW-halfW/4, 60)
-    targetSizesTextField.font = native.newFont( native.systemFont, 40 )
+	targetSizesInfo = display.newText("Target sizes:", halfW, halfH/2, deafult, textSize50)
+    targetSizesTextField = native.newTextField(halfW, halfH/2+halfH/9, screenW-halfW/4, textSize60)
+    targetSizesTextField.font = native.newFont( native.systemFont, textSize40 )
     targetSizesTextField.isEditable = true
     targetSizesTextField.text = "60;90;120;"
     targetSizesTextField:addEventListener( "userInput", textListener )
 
-    playerSizesInfo = display.newText("Player sizes:", halfW, 3*halfH/4, deafult, 50)
-    playerSizesTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
-    playerSizesTextField.font = native.newFont( native.systemFont, 40 )
+    playerSizesInfo = display.newText("Player sizes:", halfW, 3*halfH/4, deafult, textSize50)
+    playerSizesTextField = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, textSize60)
+    playerSizesTextField.font = native.newFont( native.systemFont, textSize40 )
     playerSizesTextField.isEditable = true
     playerSizesTextField.text = "30;"
     playerSizesTextField:addEventListener( "userInput", textListener )
 
-    targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, 50)
-    targetNumberTextField = native.newTextField(halfW, halfH+halfH/9, screenW-halfW/4, 60)
-    targetNumberTextField.font = native.newFont( native.systemFont, 40 )
+    targetNumberInfo = display.newText("Number of targets:", halfW, halfH, deafult, textSize50)
+    targetNumberTextField = native.newTextField(halfW, halfH+halfH/9, screenW-halfW/4, textSize60)
+    targetNumberTextField.font = native.newFont( native.systemFont, textSize40 )
     targetNumberTextField.isEditable = true
     targetNumberTextField.text = "11;"
     targetNumberTextField:addEventListener( "userInput", textListener )
 
-	testNumberInfo = display.newText("Number of tests:", halfW, halfH+halfH/4, deafult, 50)
-    testNumber = display.newText("", halfW, halfH+halfH/4+halfH/9, deafult, 50)
+	testNumberInfo = display.newText("Number of tests:", halfW, halfH+halfH/4, deafult, textSize50)
+    testNumber = display.newText("3*3*1*1 = 9", halfW, halfH+halfH/4+halfH/9, deafult, textSize50)
 
-    errorInfo = display.newText("Check for the ; symbol in textboxes", halfW, screenH-halfH/3, deafult, 40)
+    errorInfo = display.newText("Check for the ; symbol in textboxes", halfW, screenH-halfH/3, deafult, textSize40)
 	errorInfo:setFillColor(1,0,0)
     errorInfo.isVisible = false
 
-    nextButton = display.newText("NEXT", halfW, screenH-halfH/10, deafult, 100)
+    nextButton = display.newText("NEXT", halfW, screenH-halfH/9, deafult, screenH/12)
+    nextButtonRect = display.newRect(halfW, screenH-halfH/9, nextButton.width+halfW/20, nextButton.height)
+    nextButtonRect:setFillColor (0.2,0.2,0.2)
+    nextButtonRect.stroke = { 0.8, 0.8, 1 }
+    nextButtonRect.strokeWidth = 4
+
     backButton = display.newImageRect("back_button.png", halfH/8, halfH/8 )
     backButton.x = halfH/15
     backButton.y = halfH/15
@@ -79,6 +88,7 @@ function scene:create(event)
     sceneGroup:insert(targetNumberTextField)
 	sceneGroup:insert(testNumberInfo)
 	sceneGroup:insert(testNumber)
+    sceneGroup:insert(nextButtonRect)
     sceneGroup:insert(nextButton)
     sceneGroup:insert(errorInfo)
     sceneGroup:insert(backButton)
@@ -110,8 +120,10 @@ function scene:show(event)
         composer.removeScene("adv_settings_2")
         nextButton:addEventListener("touch", onNextButtonTouch)
         backButton:addEventListener("touch", onBackButtonTouch)
-        checkTests();
 	end
+    if event.phase == "did" then
+        checkTests()
+    end
 end
 
 function scene:hide(event)
@@ -179,7 +191,7 @@ function checkTests()
         end
         resultNumberOfTests=table.getn(numAmplitudes)*table.getn(numTargetSizes)*table.getn(numPlayerSizes)*table.getn(numTargets)
         testNumber.text = table.getn(numAmplitudes) .. "*" .. table.getn(numTargetSizes) .. "*" 
-                            .. table.getn(numPlayerSizes) .. "*" .. table.getn(numTargets) .. "=" ..resultNumberOfTests
+                            .. table.getn(numPlayerSizes) .. "*" .. table.getn(numTargets) .. " = " ..resultNumberOfTests
                             
 end
 

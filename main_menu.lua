@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------
 --
--- options.lua
+-- main_menu.lua
 --
 ------------------------------------------------------------------------
 
@@ -16,13 +16,42 @@ local halfH = screenH/2
 function scene:create(event)
 	sceneGroup = self.view
 
-	newTestButton = display.newText("NEW TEST", halfW, halfH-halfH/4, deafult, 100)
-	loadTestButton = display.newText("LOAD TEST", halfW, halfH, deafult, 100)
-	displaySavedTestsButton = display.newText("SHOW SAVED TESTS", halfW, halfH+halfH/4, deafult, 60)
+    appName = display.newText("Fitts law accelerometer test app", halfW, halfH/8, deafult, screenH/28)
+    appName:setFillColor (0.8,0.8,1)
 
+	newTestButton = display.newText("NEW TEST", halfW, halfH-halfH/4, deafult, screenH/12)
+    newTestButtonRect = display.newRect(halfW, halfH-halfH/4, newTestButton.width+halfW/20, newTestButton.height)
+    newTestButtonRect:setFillColor (0.2,0.2,0.2)
+    newTestButtonRect.stroke = { 0.8, 0.8, 1 }
+    newTestButtonRect.strokeWidth = 4
+
+	loadTestButton = display.newText("LOAD TEST", halfW, halfH, deafult, screenH/12)
+    loadTestButtonRect = display.newRect(halfW, halfH, loadTestButton.width+halfW/20, loadTestButton.height)
+    loadTestButtonRect:setFillColor (0.2,0.2,0.2)
+    loadTestButtonRect.stroke = { 0.8, 0.8, 1 }
+    loadTestButtonRect.strokeWidth = 4
+
+    savedTestsButton = display.newText("SAVED TESTS", halfW, halfH+halfH/4, deafult, screenH/15)
+    savedTestsButtonRect = display.newRect(halfW, halfH+halfH/4, savedTestsButton.width+halfW/20, savedTestsButton.height)
+    savedTestsButtonRect:setFillColor (0.2,0.2,0.2)
+    savedTestsButtonRect.stroke = { 0.8, 0.8, 1 }
+    savedTestsButtonRect.strokeWidth = 4
+
+    exitButton = display.newText("EXIT", halfW, screenH-halfH/9, deafult, screenH/12)
+    exitButtonRect = display.newRect(halfW, screenH-halfH/9, exitButton.width+halfW/20, exitButton.height)
+    exitButtonRect:setFillColor (0.2,0.2,0.2)
+    exitButtonRect.stroke = { 0.8, 0.8, 1 }
+    exitButtonRect.strokeWidth = 4
+
+    sceneGroup:insert(appName)
+    sceneGroup:insert(newTestButtonRect)
 	sceneGroup:insert(newTestButton)
+    sceneGroup:insert(loadTestButtonRect)
 	sceneGroup:insert(loadTestButton)
-	sceneGroup:insert(displaySavedTestsButton)
+    sceneGroup:insert(savedTestsButtonRect)
+    sceneGroup:insert(savedTestsButton)
+    sceneGroup:insert(exitButtonRect)
+    sceneGroup:insert(exitButton)
 
 end
 
@@ -42,7 +71,8 @@ function scene:show(event)
     	composer.removeScene("show_saved_test")
 		newTestButton:addEventListener("touch", onNewTestButtonTouch)
 		loadTestButton:addEventListener("touch", onLoadTestButtonTouch)
-		displaySavedTestsButton:addEventListener("touch", onSavedTestsButtonTouch)
+        savedTestsButton:addEventListener("touch", onSavedTestsButtonTouch)
+        exitButton:addEventListener("touch", onExitButtonTouch)
 
 	end
 end
@@ -51,6 +81,13 @@ function scene:hide(event)
 end
 
 function scene:destroy(event)
+end
+
+function onExitButtonTouch( event )
+    print(event.phase)
+    if event.phase == "ended" then
+        native.requestExit()
+    end
 end
 
 function onNewTestButtonTouch( event )
@@ -97,6 +134,5 @@ end
  
 -- Add the key event listener
 Runtime:addEventListener( "key", onKeyEvent )
-
 
 return scene

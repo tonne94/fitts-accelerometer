@@ -25,12 +25,25 @@ function scene:create(event)
 
 	numOfTests = event.params.numOfTests
 	username = event.params.username
+	
+	nameOfFileText = display.newText("Name of file:", halfW, halfH/5, deafult, screenH/21)
+	nameOfFile = display.newText(username..".json", halfW, halfH/3, deafult, screenH/30)
+	nameOfFile:setFillColor(0.8,0.8,1)
 
-	nameOfFileText = display.newText("Name of file:", halfW, halfH/6, deafult, 60)
-	nameOfFile = display.newText(username..".json", halfW, halfH/4, deafult, 60)
-	errorText = display.newText("", halfW, halfH/2+50, deafult, 20)
+	local options = 
+	{
+	    text = "Hello World",     
+	    x = halfW,
+	    y = halfH/2,
+	    width = screenW,
+	    font = native.systemFont,   
+	    fontSize = 20,
+	    align = "center"  -- Alignment parameter
+	}
+	errorText = display.newText(options)
 	errorText:setFillColor(1,0,0)
 	errorText.isVisible = false
+	
 	testsText=""
 
 	for i=1, numOfTests,1 do
@@ -49,32 +62,50 @@ function scene:create(event)
 		local result, reason = os.remove( system.pathForFile( "test"..i.."-"..username..".json", system.TemporaryDirectory ) )
 		  
 		if result then
-		   errorText.text = "File removed" 
+		   	errorText.text = "File removed" 
 		else
 			errorText.isVisible = true
-	  		errorText.text = "File does not exist".. reason   --> File does not exist    apple.txt: No such file or directory
+			errorText.width = screenW
+	  		errorText.text = "File not removed. Reason: ".. reason   --> File does not exist    apple.txt: No such file or directory
 		end
 	end
 
 	local t = os.date( '*t' )
 	testsText="{\n".."\t\"timestamp\":\""..os.date( "%X").." "..t.day.."."..t.month.."."..t.year.."\",\n\t\"username\":\""..username.."\",\n\t\"tests\":\n\t{"..testsText.."\n\t}\n}"
 	
-	saveButton = display.newText("Save as JSON", halfW, screenH-halfH/10-2*halfH/8, deafult, 70)
-    mainMenuButton = display.newText("Go back to main menu", halfW, screenH-halfH/10-halfH/8, deafult, 60)
-	shareButton = display.newText("Share as JSON", halfW, screenH-halfH/10, deafult, 70)
-	
-	moreTextLabel = display.newText("Add more info in file name:", halfW, 3*halfH/4, deafult, 50)
+	saveButton = display.newText("Save JSON", halfW, screenH-8*halfH/12, deafult, screenH/16)
+	saveButtonRect = display.newRect(halfW, screenH-8*halfH/12, saveButton.width+halfW/20, saveButton.height)
+	saveButtonRect:setFillColor	(0.2,0.2,0.2)
+	saveButtonRect.stroke = { 0.8, 0.8, 1 }
+	saveButtonRect.strokeWidth = 4
+
+	shareButton = display.newText("Share JSON", halfW, screenH-5*halfH/12, deafult, screenH/16)
+	shareButtonRect = display.newRect(halfW, screenH-5*halfH/12, shareButton.width+halfW/20, shareButton.height)
+	shareButtonRect:setFillColor (0.2,0.2,0.2)
+	shareButtonRect.stroke = { 0.8, 0.8, 1 }
+	shareButtonRect.strokeWidth = 4
+
+    mainMenuButton = display.newText("MAIN MENU", halfW, screenH-halfH/9, deafult, screenH/14)
+    mainMenuButtonRect = display.newRect(halfW, screenH-halfH/9, mainMenuButton.width+halfW/20, mainMenuButton.height)
+    mainMenuButtonRect:setFillColor (0.2,0.2,0.2)
+    mainMenuButtonRect.stroke = { 0.8, 0.8, 1 }
+    mainMenuButtonRect.strokeWidth = 4
+
+	moreTextLabel = display.newText("Add more info in file name:", halfW, 3*halfH/4, deafult, screenH/25)
 	-- Create text field
-	moreText = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, 60)
-    moreText.font = native.newFont( native.systemFont, 40 )
+	moreText = native.newTextField(halfW, 3*halfH/4+halfH/9, screenW-halfW/4, screenH/21)
+    moreText.font = native.newFont( native.systemFont, screenH/21 )
     moreText.isEditable = true
 	moreText:addEventListener( "userInput", textListener )
 
 	sceneGroup:insert(nameOfFile)
 	sceneGroup:insert(nameOfFileText)
 	sceneGroup:insert(errorText)
+	sceneGroup:insert(mainMenuButtonRect)
 	sceneGroup:insert(mainMenuButton)
+	sceneGroup:insert(saveButtonRect)
 	sceneGroup:insert(saveButton)
+	sceneGroup:insert(shareButtonRect)
 	sceneGroup:insert(shareButton)
 	sceneGroup:insert(moreText)
 	sceneGroup:insert(moreTextLabel)
@@ -116,7 +147,7 @@ function scene:show(event)
 		-- Create the widget
 		local addTimestampCheckbox = widget.newSwitch(
 		    {
-		        x=halfW/2, 
+		        x=halfW/2-halfH/12, 
                 y=halfH,        
                 width = screenW/12,
         		height = screenW/12,
@@ -125,7 +156,7 @@ function scene:show(event)
 		        onPress = onSwitchPress
 		    }
 		)
-		addTimestampText=display.newText("Add timestamp", halfW/2+screenW/12, halfH, deafult, screenW/12)
+		addTimestampText=display.newText("Add timestamp", halfW/2+screenW/12-halfH/23, halfH, deafult, screenW/12)
 		addTimestampText.anchorX=0
 		sceneGroup:insert(addTimestampCheckbox)
 		sceneGroup:insert(addTimestampText)

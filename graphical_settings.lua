@@ -58,17 +58,20 @@ function scene:create(event)
 
     --labels for info and counters
 
-    labelInfoRadius = display.newText("Radius:", halfW-3*halfW/4, halfH/10, deafult, 25)
-    radiusLabel = display.newText(testsArray[index][1], halfW-3*halfW/4, halfH/5, deafult, 50)
+    textSize25=screenH/50
+    textSize50=screenH/25
     
-    labelInfoCircleSize = display.newText("Target size:", halfW-halfW/4, halfH/10, deafult, 25)
-    circleSizeLabel = display.newText(testsArray[index][2], halfW-halfW/4, halfH/5, deafult, 50)
+    labelInfoRadius = display.newText("Radius:", halfW-3*halfW/4, halfH/10, deafult, textSize25)
+    radiusLabel = display.newText(testsArray[index][1], halfW-3*halfW/4, halfH/5, deafult, textSize50)
+    
+    labelInfoCircleSize = display.newText("Target size:", halfW-halfW/4, halfH/10, deafult, textSize25)
+    circleSizeLabel = display.newText(testsArray[index][2], halfW-halfW/4, halfH/5, deafult, textSize50)
 
-    labelInfoPlayerSize = display.newText("Player size:", halfW+halfW/4, halfH/10, deafult, 25)
-    playerSizeLabel = display.newText(testsArray[index][3], halfW+halfW/4, halfH/5, deafult, 50)  
+    labelInfoPlayerSize = display.newText("Player size:", halfW+halfW/4, halfH/10, deafult, textSize25)
+    playerSizeLabel = display.newText(testsArray[index][3], halfW+halfW/4, halfH/5, deafult, textSize50)  
 
-    labelInfoCircleNumbers = display.newText("Circle number:", halfW+3*halfW/4, halfH/10, deafult, 25)
-    circleNumbersLabel = display.newText(testsArray[index][4], halfW+3*halfW/4, halfH/5, deafult, 50)  
+    labelInfoCircleNumbers = display.newText("Circle number:", halfW+3*halfW/4, halfH/10, deafult, textSize25)
+    circleNumbersLabel = display.newText(testsArray[index][4], halfW+3*halfW/4, halfH/5, deafult, textSize50)  
 
 	circlePlayer = display.newCircle( halfW, halfH, currentPlayerRadius )
 	circlePlayer:setFillColor( 0, 0, 1 )

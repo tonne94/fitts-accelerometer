@@ -34,6 +34,9 @@ local username
 
 local first_time = true
 
+--keep screen on until testing is done
+system.setIdleTimer( false )
+
 function scene:create(event)
 	sceneGroup = self.view
 
@@ -71,14 +74,14 @@ function scene:create(event)
 	sceneNameBg = display.newRect(halfW, halfH/15, screenW, 2*halfH/15)
 	sceneNameBg:setFillColor(1,0,0, 0.5)
 	sceneName = display.newText("Test["..testNumber.."]: "..testsArray[testNumber][1]..", "..testsArray[testNumber][2]
-						..", "..testsArray[testNumber][3]..", "..testsArray[testNumber][4], halfW, halfH/15, deafult, 60)
+						..", "..testsArray[testNumber][3]..", "..testsArray[testNumber][4], halfW, halfH/15, deafult, screenH/21)
 
 	if switchAccelerometer == true then
 		Runtime:addEventListener( "accelerometer", onAccelerateRaw )
-		infoSwitchLabel = display.newText("onAccelerateRaw",halfW, screenH-halfH/2, deafult, 20)
+		infoSwitchLabel = display.newText("onAccelerateRaw",halfW, screenH-halfH/2, deafult, screenH/64)
 	else
 		Runtime:addEventListener( "accelerometer", onAccelerateGravity )
-		infoSwitchLabel = display.newText("onAccelerateGravity",halfW, screenH-halfH/2, deafult, 20)
+		infoSwitchLabel = display.newText("onAccelerateGravity",halfW, screenH-halfH/2, deafult, screenH/64)
 	end
 
 	if switchSubmitStyle == true then
@@ -102,12 +105,12 @@ function scene:create(event)
     end
     drawCircles()
 
-	textX = display.newText("X:"..xPos, halfW, halfH+450, deafult, 20)
-	textY = display.newText("Y:"..yPos, halfW, halfH+500, deafult, 20)
-	textZ = display.newText("Z:"..zPos, halfW, halfH+550, deafult, 20)
-	countText = display.newText( "0", halfW, halfH-100, deafult, 20)
-	coordinates = display.newText( "KOORDINATE", halfW, halfH-450, deafult, 20)
-	screenSize = display.newText( "SCREEN WIDTH"..display.pixelWidth.."\nSCREEN HEIGHT"..screenH, halfW, halfH-400, deafult, 20)
+	textX = display.newText("X:"..xPos, halfW, halfH+450, deafult, screenH/64)
+	textY = display.newText("Y:"..yPos, halfW, halfH+500, deafult, screenH/64)
+	textZ = display.newText("Z:"..zPos, halfW, halfH+550, deafult, screenH/64)
+	countText = display.newText( "0", halfW, halfH-100, deafult, screenH/64)
+	coordinates = display.newText( "KOORDINATE", halfW, halfH-450, deafult, screenH/64)
+	screenSize = display.newText( "SCREEN WIDTH"..display.pixelWidth.."\nSCREEN HEIGHT"..screenH, halfW, halfH-400, deafult, screenH/64)
 
 	coordinates.isVisible = false
 	screenSize.isVisible = false
@@ -115,6 +118,7 @@ function scene:create(event)
 	textX.isVisible = false
 	textY.isVisible = false
 	textZ.isVisible = false
+	infoSwitchLabel.isVisible = false
 
 	targetCircle = display.newCircle( -200, -200, circleSize )
 	changeTarget(activeIndex)

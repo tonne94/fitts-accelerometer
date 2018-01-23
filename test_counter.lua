@@ -24,6 +24,9 @@ local gainValue
 local username
 local subtaskTime = {}
 
+--screen off if idle
+system.setIdleTimer( true )
+
 function scene:create(event)
 	sceneGroup = self.view
 
@@ -126,20 +129,26 @@ function scene:create(event)
 
 	end
 
-	infoLabel = display.newText("", halfW, halfH, deafult, 70)
+	infoLabel = display.newText("", halfW, halfH-halfH/5, deafult, screenH/16)
 
-	nextButton = display.newText("START TEST", halfW, screenH-halfH/8, deafult, 80)
+	nextButton = display.newText("START TEST", halfW, screenH-halfH/9, deafult, screenH/16)
+    nextButtonRect = display.newRect(halfW, screenH-halfH/9, nextButton.width, nextButton.height)
+    nextButtonRect:setFillColor (0.2,0.2,0.2)
+    nextButtonRect.stroke = { 0.8, 0.8, 1 }
+    nextButtonRect.strokeWidth = 4
 
 	finished = false
 
 	if (testNumber-1)==table.getn(testsArray) then
-		infoLabel.text = username.."\nAll tests finished!"
+		infoLabel.text = username.."\n\nAll tests finished!"
 		finished = true
 		nextButton.text="GO TO RESULTS"
+		nextButtonRect.width=screenW-halfH/10
 	else
-		infoLabel.text = username.."\nGet ready for:\nTest["..testNumber.."]"
+		infoLabel.text = username.."\n\nGet ready for:\nTest["..testNumber.."]"
 	end
 	sceneGroup:insert(infoLabel)
+	sceneGroup:insert(nextButtonRect)
 	sceneGroup:insert(nextButton)
 end
 
