@@ -21,8 +21,6 @@ settings =
 		usesPermissions =
 		{
 			"android.permission.INTERNET",
-			"android.permission.WRITE_INTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE",
 		},
 	},
 
